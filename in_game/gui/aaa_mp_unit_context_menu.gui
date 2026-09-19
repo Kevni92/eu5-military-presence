@@ -9,7 +9,7 @@ types ContextMenuSpecificTypes
 {
 	# Reusable patrol section. The datacontext must be a Unit.
 	type MpPatrolContextMenuActions = ContextMenuEntryListSubSection {
-		visible = "[And(Unit.IsArmy, ObjectsEqual(Unit.GetCountry, Player.Self))]"
+		visible = "[And(Unit.IsArmy, Unit.GetCountry.IsPlayer)]"
 
 		# Route editing is available only while the patrol is stopped.
 		ContextMenuActionEntry = {
