@@ -228,14 +228,20 @@ mp_process_patrol_army_effect = {
 			has_variable_list = mp_patrol_provinces
 		}
 
+		owner = {
+			save_scope_as = mp_patrol_owner
+		}
 		var:mp_patrol_current = {
 			save_scope_as = mp_current_patrol_province
 		}
 
 		if = {
 			limit = {
-				owner = {
-					owns_or_non_sovereign_subject_owns_entire_province = scope:mp_current_patrol_province
+				scope:mp_current_patrol_province = {
+					any_location_in_province = {
+						owner = scope:mp_patrol_owner
+						count = all
+					}
 				}
 			}
 
@@ -264,8 +270,8 @@ mp_process_patrol_army_effect = {
 			}
 		}
 		else = {
-			# The province left the owner's valid territory. Keep the configured
-			# route intact, but virtually advance past it for this cycle.
+			# The province is no longer fully owned by this army's country.
+			# Keep the configured route intact and virtually skip it for this cycle.
 			mp_advance_patrol_route_effect = yes
 		}
 	}
