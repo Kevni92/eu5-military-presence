@@ -130,6 +130,9 @@ mp_sync_military_presence_map_effect = {
 }
 
 # Scope: province
+# change_province_modifier_size is DELTA-based, not an absolute setter.
+# Recreate the modifier at its vanilla size (1.0), then apply (presence/100 - 1)
+# so the final strength is exactly presence/100 every time this effect runs.
 mp_refresh_military_presence_modifier_effect = {
 	if = {
 		limit = {
@@ -139,13 +142,15 @@ mp_refresh_military_presence_modifier_effect = {
 
 		if = {
 			limit = {
-				NOT = { has_province_modifier = mp_military_presence_modifier }
+				has_province_modifier = mp_military_presence_modifier
 			}
-			add_province_modifier = {
-				modifier = mp_military_presence_modifier
-				years = -1
-				mode = replace
-			}
+			remove_province_modifier = mp_military_presence_modifier
+		}
+
+		add_province_modifier = {
+			modifier = mp_military_presence_modifier
+			years = -1
+			mode = replace
 		}
 
 		change_province_modifier_size = {
@@ -153,6 +158,7 @@ mp_refresh_military_presence_modifier_effect = {
 			value = {
 				value = var:mp_military_presence
 				divide = 100
+				subtract = 1
 			}
 			recalculate_immediately = yes
 		}
