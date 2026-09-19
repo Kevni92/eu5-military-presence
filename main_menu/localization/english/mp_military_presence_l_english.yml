@@ -1,6 +1,6 @@
 ﻿l_english:
  mp_military_patrol: "Military Patrol"
- mp_military_patrol_desc: "Assign this army to its configured virtual patrol route. Each month it builds Military Presence in its current patrol province. At 90 Military Presence it advances to the next configured province."
+ mp_military_patrol_desc: "Assign an army to its configured virtual patrol route. Each month it builds Military Presence in its current patrol province. At 90 Military Presence it advances to the next configured province."
 
  mp_add_patrol_province: "Add Military Patrol Province"
  mp_add_patrol_province_desc: "Append a province to an army's virtual Military Patrol route. Provinces are visited in the order they were added and the route loops after the final province."
@@ -9,10 +9,30 @@
  mp_no_available_armies: "There are no available armies."
  mp_no_available_patrol_provinces: "There are no eligible fully owned provinces that are not already in this army's patrol route."
 
+ mp_start_military_patrol: "Start Military Patrol"
+ mp_start_military_patrol_desc: "Assign an army with a configured patrol route to Military Patrol duty."
+ mp_start_military_patrol_select_army: "Select Army for Military Patrol"
+ mp_no_configured_patrol_armies: "No inactive army has a configured Military Patrol route."
+
+ mp_stop_military_patrol: "Stop Military Patrol"
+ mp_stop_military_patrol_desc: "End Military Patrol duty for an army without deleting its configured route."
+ mp_stop_military_patrol_select_army: "Select Military Patrol to Stop"
+ mp_no_active_patrol_armies: "No army is currently assigned to Military Patrol duty."
+
  mp_clear_patrol_route: "Clear Military Patrol Route"
  mp_clear_patrol_route_desc: "Remove every configured province from an army's Military Patrol route and stop its virtual patrol assignment."
  mp_clear_patrol_route_select_army: "Select Patrol Route to Clear"
  mp_no_patrol_routes: "No army has a configured Military Patrol route."
 
  mp_military_presence_modifier: "Military Presence"
- mp_military_presence_modifier_desc: "Military forces assigned to patrol this province suppress unrest and help state control recover. The effect scales with Military Presence."
+ mp_military_presence_modifier_desc: "Military forces assigned to patrol this province suppress unrest and strengthen state control. The effect scales with Military Presence; at 100 Presence it grants +10% maximum Control."
+
+ game_concept_mp_military_presence: "Military Presence"
+ game_concept_mp_military_presence_desc: "A province-level value from 0 to 100 representing sustained military enforcement. Patrol armies build Military Presence on their configured routes."
+ mapmode_mp_military_presence_name: "Military Presence"
+ MAPMODE_MP_MILITARY_PRESENCE: "#T $mapmode_mp_military_presence_name$#!\nColors every location of a province by that province's Military Presence. Red is low presence and green is high presence."
+ MAPMODE_MP_MILITARY_PRESENCE_NONE: "No Military Presence"
+ MAPMODE_MP_MILITARY_PRESENCE_LOW: "Low Military Presence"
+ MAPMODE_MP_MILITARY_PRESENCE_HIGH: "High Military Presence"
+ MAPMODE_MP_MILITARY_PRESENCE_TT: "#T $mapmode_mp_military_presence_name$#!\n[ROOT.GetLocation.GetName]: #V [ROOT.GetLocation.MakeScope.GetVariable('mp_military_presence_map_value').GetValue|0]#! / 100"
+ MAPMODE_MP_MILITARY_PRESENCE_TT_NONE: "#T $mapmode_mp_military_presence_name$#!\n[ROOT.GetLocation.GetName]: #V 0#! / 100"
