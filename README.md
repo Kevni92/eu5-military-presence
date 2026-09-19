@@ -14,11 +14,11 @@ The MVP uses vanilla Generic Actions instead of a custom multi-select GUI:
 
 1. Use **Add Military Patrol Province**.
 2. Select one of your armies.
-3. Select a province.
+3. Select a fully owned province.
 4. Repeat to append as many provinces as desired.
 5. Toggle **Military Patrol** on for that army.
 
-The insertion order is the patrol order. **Clear Military Patrol Route** removes the complete route from a selected army.
+The insertion order is the patrol order. The route length itself is not fixed; the repeated action can append an arbitrary number of provinces. **Clear Military Patrol Route** removes the complete route from a selected army.
 
 ## Current balance
 
@@ -53,6 +53,7 @@ The monthly driver runs from `monthly_country_pulse`.
 
 - No physical army movement or map animation.
 - Province selection is one province per Generic Action invocation; there is no custom multi-select UI yet.
+- Only provinces fully owned by the army's country are accepted/processed in this MVP.
 - Patrol contribution is a fixed monthly amount, not yet scaled by army strength/composition.
 - No direct instantaneous Control increase is applied; the current implementation modifies monthly Control growth and unrest.
 - AI does not configure patrol routes.
