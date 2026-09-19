@@ -8,7 +8,7 @@ mp_military_presence_monthly_pulse = {
 	trigger = {
 		OR = {
 			any_army = {
-				has_variable = mp_patrol_active
+				is_exiled = no
 			}
 			any_province = {
 				has_variable = mp_military_presence
