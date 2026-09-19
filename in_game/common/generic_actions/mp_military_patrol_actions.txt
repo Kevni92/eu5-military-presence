@@ -1,0 +1,117 @@
+mp_add_patrol_province = {
+	type = owncountry
+	show_message = no
+	ai_tick = never
+
+	potential = {
+		scope:actor = {
+			regular_army_size > 0
+		}
+	}
+
+	allow = {
+	}
+
+	select_trigger = {
+		looking_for_a = unit
+		source = actor
+		target_flag = mp_patrol_unit
+		name = "mp_add_patrol_province_select_army"
+		none_available_msg_key = "mp_no_available_armies"
+
+		column = {
+			data = name
+		}
+		column = {
+			data = unit_location
+		}
+
+		visible = {
+			is_army = yes
+		}
+	}
+
+	select_trigger = {
+		looking_for_a = province
+		source = actor
+		target_flag = mp_patrol_province
+		name = "mp_add_patrol_province_select_province"
+		none_available_msg_key = "mp_no_available_patrol_provinces"
+
+		column = {
+			data = name
+		}
+		column = {
+			data = population
+		}
+
+		visible = {
+			scope:actor = {
+				owns_or_non_sovereign_subject_owns_entire_province = root
+			}
+			scope:mp_patrol_unit = {
+				NOT = {
+					is_target_in_variable_list = {
+						name = mp_patrol_provinces
+						target = root
+					}
+				}
+			}
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit = {
+			mp_add_patrol_province_effect = yes
+		}
+	}
+
+	ai_will_do = {
+		value = -1
+	}
+}
+
+mp_clear_patrol_route = {
+	type = owncountry
+	show_message = no
+	ai_tick = never
+
+	potential = {
+		scope:actor = {
+			regular_army_size > 0
+		}
+	}
+
+	allow = {
+	}
+
+	select_trigger = {
+		looking_for_a = unit
+		source = actor
+		target_flag = mp_patrol_unit
+		name = "mp_clear_patrol_route_select_army"
+		none_available_msg_key = "mp_no_patrol_routes"
+
+		column = {
+			data = name
+		}
+		column = {
+			data = unit_location
+		}
+
+		visible = {
+			is_army = yes
+			has_variable_list = mp_patrol_provinces
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit = {
+			mp_clear_patrol_route_effect = yes
+		}
+	}
+
+	ai_will_do = {
+		value = -1
+	}
+}
