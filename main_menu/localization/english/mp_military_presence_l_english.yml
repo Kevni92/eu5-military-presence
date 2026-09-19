@@ -26,6 +26,7 @@
 
  mp_military_presence_modifier: "Military Presence"
  mp_military_presence_modifier_desc: "Military forces assigned to patrol this province suppress unrest and strengthen state control. The effect scales with Military Presence; at 100 Presence it grants +10% maximum Control."
+ STATIC_MODIFIER_NAME_mp_military_presence_modifier: "Military Presence"
 
  game_concept_mp_military_presence: "Military Presence"
  game_concept_mp_military_presence_desc: "A province-level value from 0 to 100 representing sustained military enforcement. Patrol armies build Military Presence on their configured routes."
