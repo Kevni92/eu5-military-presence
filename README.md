@@ -59,7 +59,7 @@ Military Presence remains authoritative at province scope. Because EU5 map-mode 
 
 Decay is processed before army contributions. A province already carrying Military Presence therefore gains a net `+10` in a month with one contributing army (`-2 +12`). Multiple unassigned armies physically stationed in the same fully owned province currently stack their fixed contributions.
 
-The province modifier scales linearly with Military Presence. Therefore 50 Presence gives half of those effects, including +5% maximum Control; 100 Presence gives +10% maximum Control.
+The province modifier scales linearly with Military Presence. Its static modifier is reapplied with an explicit `size = Military Presence / 100`, so refreshes are absolute rather than cumulative. Therefore 22 Presence means 22% of the static modifier (+2.2% maximum Control, +0.22% monthly Control, -2.2% unrest); 50 Presence gives +5% maximum Control and 100 Presence gives +10% maximum Control.
 
 ## Technical design
 
@@ -84,7 +84,7 @@ Per-army state:
 
 The monthly driver runs from `monthly_country_pulse`.
 
-The right-click integration redefines vanilla `UnitContextMenu` in `in_game/gui/00_mp_unit_context_menu.gui`. The `00_` prefix ensures the mod definition wins Jomini's first-loaded GUI type resolution while preserving the vanilla `unit_contextmenu_pre_entries` hook and `Unit.GetQuickUnitActions` list.
+The right-click integration redefines vanilla `UnitContextMenu` and `UnitMarkerContextMenu` in `in_game/gui/aaa_mp_unit_context_menu.gui`. The `aaa_` prefix follows tested EU5 GUI-mod precedent for first-definition-wins loading, and the definitions live in the same `types ContextMenuSpecificTypes` collection as vanilla. Vanilla quick unit actions and the `unit_contextmenu_pre_entries` hook remain preserved.
 
 ## Native army objective limitation
 
@@ -101,7 +101,7 @@ For that reason this MVP does **not** claim to create a new native Carpet-Siege-
 - Contributions are fixed per army, not yet scaled by army strength/composition; splitting armies can therefore multiply the contribution in the current MVP.
 - No direct instantaneous Control increase is applied; the current implementation modifies monthly Control growth, maximum Control and unrest.
 - AI does not configure patrol routes.
-- The `UnitContextMenu` redefinition is a GUI compatibility point with other mods that redefine the same vanilla type.
+- The `UnitContextMenu` / `UnitMarkerContextMenu` redefinitions are GUI compatibility points with other mods that redefine the same vanilla types.
 
 ## Target
 
