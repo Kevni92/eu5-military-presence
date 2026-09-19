@@ -1,0 +1,294 @@
+# Military Presence MVP
+#
+# Province state:
+#   mp_military_presence = 0..100
+#
+# Unit route state:
+#   mp_patrol_provinces : membership list
+#   mp_patrol_head      : first province scope
+#   mp_patrol_tail      : last province scope
+#   mp_patrol_current   : current virtual province scope
+#   mp_patrol_next      : province -> next province scope (circular linked list)
+#   mp_patrol_active    : set by the Military Patrol unit ability
+
+# Scope: unit
+# Requires scope:mp_patrol_province from the Generic Action.
+mp_add_patrol_province_effect = {
+	if = {
+		limit = {
+			NOT = { has_variable_list = mp_patrol_provinces }
+		}
+
+		add_to_variable_list = {
+			name = mp_patrol_provinces
+			target = scope:mp_patrol_province
+		}
+
+		set_variable = {
+			name = mp_patrol_head
+			value = scope:mp_patrol_province
+		}
+		set_variable = {
+			name = mp_patrol_tail
+			value = scope:mp_patrol_province
+		}
+		set_variable = {
+			name = mp_patrol_current
+			value = scope:mp_patrol_province
+		}
+
+		add_to_variable_map = {
+			name = mp_patrol_next
+			key = scope:mp_patrol_province
+			value = scope:mp_patrol_province
+		}
+	}
+	else_if = {
+		limit = {
+			NOT = {
+				is_target_in_variable_list = {
+					name = mp_patrol_provinces
+					target = scope:mp_patrol_province
+				}
+			}
+		}
+
+		var:mp_patrol_tail = {
+			save_scope_as = mp_old_patrol_tail
+		}
+		var:mp_patrol_head = {
+			save_scope_as = mp_patrol_route_head
+		}
+
+		# Rewire old tail -> new province.
+		remove_from_variable_map = {
+			name = mp_patrol_next
+			key = scope:mp_old_patrol_tail
+		}
+		add_to_variable_map = {
+			name = mp_patrol_next
+			key = scope:mp_old_patrol_tail
+			value = scope:mp_patrol_province
+		}
+
+		# Close the ring: new province -> route head.
+		add_to_variable_map = {
+			name = mp_patrol_next
+			key = scope:mp_patrol_province
+			value = scope:mp_patrol_route_head
+		}
+
+		add_to_variable_list = {
+			name = mp_patrol_provinces
+			target = scope:mp_patrol_province
+		}
+		set_variable = {
+			name = mp_patrol_tail
+			value = scope:mp_patrol_province
+		}
+	}
+}
+
+# Scope: unit
+mp_clear_patrol_route_effect = {
+	clear_variable_list = mp_patrol_provinces
+	clear_variable_map = mp_patrol_next
+	remove_variable = mp_patrol_head
+	remove_variable = mp_patrol_tail
+	remove_variable = mp_patrol_current
+	remove_variable = mp_patrol_active
+}
+
+# Scope: province
+mp_refresh_military_presence_modifier_effect = {
+	if = {
+		limit = {
+			has_variable = mp_military_presence
+			var:mp_military_presence > 0
+		}
+
+		if = {
+			limit = {
+				NOT = { has_province_modifier = mp_military_presence_modifier }
+			}
+			add_province_modifier = {
+				modifier = mp_military_presence_modifier
+				years = -1
+				mode = replace
+			}
+		}
+
+		change_province_modifier_size = {
+			modifier = mp_military_presence_modifier
+			value = {
+				value = var:mp_military_presence
+				divide = 100
+			}
+			recalculate_immediately = yes
+		}
+	}
+	else_if = {
+		limit = {
+			has_province_modifier = mp_military_presence_modifier
+		}
+		remove_province_modifier = mp_military_presence_modifier
+	}
+}
+
+# Scope: province
+# Fixed MVP contribution. Strength/composition weighting is intentionally deferred.
+mp_add_military_presence_effect = {
+	if = {
+		limit = {
+			NOT = { has_variable = mp_military_presence }
+		}
+		set_variable = {
+			name = mp_military_presence
+			value = 0
+		}
+	}
+
+	change_variable = {
+		name = mp_military_presence
+		add = 12
+	}
+	clamp_variable = {
+		name = mp_military_presence
+		min = 0
+		max = 100
+	}
+
+	mp_refresh_military_presence_modifier_effect = yes
+}
+
+# Scope: province
+mp_decay_military_presence_effect = {
+	if = {
+		limit = {
+			has_variable = mp_military_presence
+		}
+
+		change_variable = {
+			name = mp_military_presence
+			add = -2
+		}
+		clamp_variable = {
+			name = mp_military_presence
+			min = 0
+			max = 100
+		}
+
+		mp_refresh_military_presence_modifier_effect = yes
+
+		if = {
+			limit = {
+				var:mp_military_presence <= 0
+			}
+			remove_variable = mp_military_presence
+		}
+	}
+}
+
+# Scope: unit
+mp_advance_patrol_route_effect = {
+	if = {
+		limit = {
+			has_variable = mp_patrol_current
+		}
+
+		var:mp_patrol_current = {
+			save_scope_as = mp_current_patrol_province
+		}
+
+		if = {
+			limit = {
+				is_key_in_variable_map = {
+					name = mp_patrol_next
+					target = scope:mp_current_patrol_province
+				}
+			}
+
+			"variable_map(mp_patrol_next|scope:mp_current_patrol_province)" = {
+				save_scope_as = mp_next_patrol_province
+			}
+			set_variable = {
+				name = mp_patrol_current
+				value = scope:mp_next_patrol_province
+			}
+		}
+	}
+}
+
+# Scope: unit
+# At most one route transition is made per monthly pulse.
+mp_process_patrol_army_effect = {
+	if = {
+		limit = {
+			has_variable = mp_patrol_current
+			has_variable_list = mp_patrol_provinces
+		}
+
+		var:mp_patrol_current = {
+			save_scope_as = mp_current_patrol_province
+		}
+
+		if = {
+			limit = {
+				owner = {
+					owns_or_non_sovereign_subject_owns_entire_province = scope:mp_current_patrol_province
+				}
+			}
+
+			if = {
+				limit = {
+					scope:mp_current_patrol_province = {
+						has_variable = mp_military_presence
+						var:mp_military_presence >= 90
+					}
+				}
+				mp_advance_patrol_route_effect = yes
+			}
+			else = {
+				scope:mp_current_patrol_province = {
+					mp_add_military_presence_effect = yes
+				}
+
+				if = {
+					limit = {
+						scope:mp_current_patrol_province = {
+							var:mp_military_presence >= 90
+						}
+					}
+					mp_advance_patrol_route_effect = yes
+				}
+			}
+		}
+		else = {
+			# The province left the owner's valid territory. Keep the configured
+			# route intact, but virtually advance past it for this cycle.
+			mp_advance_patrol_route_effect = yes
+		}
+	}
+}
+
+# Scope: country
+mp_monthly_country_presence_effect = {
+	# Existing presence decays before patrol armies contribute this month.
+	every_province = {
+		limit = {
+			has_variable = mp_military_presence
+		}
+		mp_decay_military_presence_effect = yes
+	}
+
+	every_army = {
+		limit = {
+			has_variable = mp_patrol_active
+			has_variable = mp_patrol_current
+			has_variable_list = mp_patrol_provinces
+			in_combat = no
+			is_exiled = no
+		}
+		mp_process_patrol_army_effect = yes
+	}
+}
