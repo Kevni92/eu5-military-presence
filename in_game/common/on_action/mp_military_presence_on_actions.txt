@@ -1,0 +1,22 @@
+monthly_country_pulse = {
+	on_actions = {
+		mp_military_presence_monthly_pulse
+	}
+}
+
+mp_military_presence_monthly_pulse = {
+	trigger = {
+		OR = {
+			any_army = {
+				has_variable = mp_patrol_active
+			}
+			any_province = {
+				has_variable = mp_military_presence
+			}
+		}
+	}
+
+	effect = {
+		mp_monthly_country_presence_effect = yes
+	}
+}
