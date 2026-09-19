@@ -1,0 +1,124 @@
+# Military Presence - army right-click context menu integration
+#
+# GUI types/templates use first-in-file-order precedence in Jomini. The 00_ prefix
+# ensures this UnitContextMenu definition is loaded before vanilla context_menu.gui.
+# The vanilla UnitContextMenu structure and QuickUnitActions list are preserved.
+
+types MilitaryPresenceContextMenuOverrides {
+	type UnitContextMenu = ContextMenuBase {
+		blockoverride "contextmenu_content" {
+			ContextMenuSection = {
+				blockoverride "title_icon" {
+					icon = {
+						size = { 32 32 }
+						texture = "gfx/interface/icons/unit_recruit/normal_training.dds"
+					}
+				}
+
+				blockoverride "title_text" {
+					raw_text = "[Unit.GetNameWithNoTooltip]"
+				}
+
+				blockoverride "contextmenu_entries" {
+					# Keep vanilla's per-instance hook. Unit Overview uses this for
+					# its "go to army location" entry.
+					block "unit_contextmenu_pre_entries" {}
+
+					# Military Presence actions are shown only for the player's armies.
+					ContextMenuEntryListSubSection = {
+						visible = "[And(Unit.IsArmy, ObjectsEqual(Unit.GetCountry, Player.Self))]"
+
+						ContextMenuActionEntry = {
+							visible = "[Not(Unit.MakeScope.GetVariable('mp_patrol_active').IsSet)]"
+							title = "mp_add_patrol_province"
+							actor = "[Player]"
+							parameter = {
+								parameter_name = "mp_patrol_unit"
+								parameter_value = "[Unit.MakeScope]"
+							}
+							left_action = { action_name = "mp_add_patrol_province" }
+
+							blockoverride "entry_icon_texture" {
+								texture = "gfx/interface/icons/unit_actions/land_levies_rally_point.dds"
+							}
+							blockoverride "entry_text" {
+								text = "mp_add_patrol_province"
+							}
+						}
+
+						# Start only makes sense after at least one patrol province exists
+						# and while the patrol is not already active.
+						ContextMenuActionEntry = {
+							visible = "[And(Unit.MakeScope.GetVariable('mp_patrol_route_configured').IsSet, Not(Unit.MakeScope.GetVariable('mp_patrol_active').IsSet))]"
+							title = "mp_start_military_patrol"
+							actor = "[Player]"
+							parameter = {
+								parameter_name = "mp_patrol_unit"
+								parameter_value = "[Unit.MakeScope]"
+							}
+							left_action = { action_name = "mp_start_military_patrol" }
+
+							blockoverride "entry_icon_texture" {
+								texture = "gfx/interface/icons/unit_actions/regulars.dds"
+							}
+							blockoverride "entry_text" {
+								text = "mp_start_military_patrol"
+							}
+						}
+
+						# Stop is visible only while this army is actually on patrol.
+						ContextMenuActionEntry = {
+							visible = "[Unit.MakeScope.GetVariable('mp_patrol_active').IsSet]"
+							title = "mp_stop_military_patrol"
+							actor = "[Player]"
+							parameter = {
+								parameter_name = "mp_patrol_unit"
+								parameter_value = "[Unit.MakeScope]"
+							}
+							left_action = { action_name = "mp_stop_military_patrol" }
+
+							blockoverride "entry_icon_texture" {
+								texture = "gfx/interface/icons/unit_actions/regulars.dds"
+							}
+							blockoverride "entry_text" {
+								text = "mp_stop_military_patrol"
+							}
+							blockoverride "button_texture" {
+								using = button_regular_red_texture
+							}
+						}
+
+						# Route clearing is intentionally hidden while patrol is active;
+						# stop first, then edit or clear the route.
+						ContextMenuActionEntry = {
+							visible = "[And(Unit.MakeScope.GetVariable('mp_patrol_route_configured').IsSet, Not(Unit.MakeScope.GetVariable('mp_patrol_active').IsSet))]"
+							title = "mp_clear_patrol_route"
+							actor = "[Player]"
+							parameter = {
+								parameter_name = "mp_patrol_unit"
+								parameter_value = "[Unit.MakeScope]"
+							}
+							left_action = { action_name = "mp_clear_patrol_route" }
+
+							blockoverride "entry_icon_texture" {
+								texture = "gfx/interface/icons/unit_actions/regulars.dds"
+							}
+							blockoverride "entry_text" {
+								text = "mp_clear_patrol_route"
+							}
+						}
+					}
+
+					# Vanilla quick unit actions remain unchanged below the mod entries.
+					ContextMenuEntryListSubSection = {
+						datacontext = "[Unit.GetQuickUnitActions]"
+						datacontext = "[Pin('unit_actions')]"
+						visible = "[DataModelHasItems(QuickUnitActions.AccessList)]"
+						datamodel = "[QuickUnitActions.AccessList]"
+						item = { UnitContextMenuActionItem = {} }
+					}
+				}
+			}
+		}
+	}
+}
