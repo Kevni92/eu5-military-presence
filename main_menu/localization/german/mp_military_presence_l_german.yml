@@ -1,0 +1,18 @@
+﻿l_german:
+ mp_military_patrol: "Militärpatrouille"
+ mp_military_patrol_desc: "Weist diese Armee ihrer konfigurierten virtuellen Patrouillenroute zu. Jeden Monat erhöht sie die Militärpräsenz in ihrer aktuellen Patrouillenprovinz. Bei 90 Militärpräsenz wechselt sie zur nächsten konfigurierten Provinz."
+
+ mp_add_patrol_province: "Provinz zur Militärpatrouille hinzufügen"
+ mp_add_patrol_province_desc: "Fügt eine Provinz an die virtuelle Patrouillenroute einer Armee an. Die Provinzen werden in der Reihenfolge ihrer Auswahl besucht; nach der letzten beginnt die Route wieder bei der ersten."
+ mp_add_patrol_province_select_army: "Patrouillenarmee auswählen"
+ mp_add_patrol_province_select_province: "Provinz zum Anhängen auswählen"
+ mp_no_available_armies: "Es sind keine geeigneten Armeen verfügbar."
+ mp_no_available_patrol_provinces: "Es gibt keine geeignete vollständig eigene Provinz, die noch nicht Teil der Patrouillenroute dieser Armee ist."
+
+ mp_clear_patrol_route: "Militärpatrouillenroute löschen"
+ mp_clear_patrol_route_desc: "Entfernt alle konfigurierten Provinzen aus der Militärpatrouillenroute einer Armee und beendet ihre virtuelle Patrouillenzuweisung."
+ mp_clear_patrol_route_select_army: "Zu löschende Patrouillenroute auswählen"
+ mp_no_patrol_routes: "Keine Armee besitzt eine konfigurierte Militärpatrouillenroute."
+
+ mp_military_presence_modifier: "Militärpräsenz"
+ mp_military_presence_modifier_desc: "Der Provinz zugewiesene Militärkräfte unterdrücken Unruhe und beschleunigen die Erholung staatlicher Kontrolle. Der Effekt skaliert mit der Militärpräsenz."
