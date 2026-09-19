@@ -21,11 +21,12 @@
 
  mp_clear_patrol_route: "Militärpatrouillenroute löschen"
  mp_clear_patrol_route_desc: "Entfernt alle konfigurierten Provinzen aus der Militärpatrouillenroute einer Armee und beendet ihre virtuelle Patrouillenzuweisung."
- mp_clear_patrol_route_select_army: "Zu löschende Patrouillenroute auswählen"
+ mp_clear_patrol_route_select_army: "Zu lööschende Patrouillenroute auswählen"
  mp_no_patrol_routes: "Keine Armee besitzt eine konfigurierte Militärpatrouillenroute."
 
  mp_military_presence_modifier: "Militärpräsenz"
  mp_military_presence_modifier_desc: "Der Provinz zugewiesene Militärkräfte unterdrücken Unruhe und stärken die staatliche Kontrolle. Der Effekt skaliert mit der Militärpräsenz; bei 100 Präsenz gewährt er +10 % maximale Kontrolle."
+ STATIC_MODIFIER_NAME_mp_military_presence_modifier: "Militärpräsenz"
 
  game_concept_mp_military_presence: "Militärpräsenz"
  game_concept_mp_military_presence_desc: "Ein Provinzwert von 0 bis 100, der die dauerhafte militärische Durchsetzung staatlicher Ordnung abbildet. Patrouillierende Armeen bauen Militärpräsenz entlang ihrer konfigurierten Routen auf."
