@@ -21,7 +21,7 @@
 
  mp_clear_patrol_route: "Militärpatrouillenroute löschen"
  mp_clear_patrol_route_desc: "Entfernt alle konfigurierten Provinzen aus der Militärpatrouillenroute einer Armee und beendet ihre virtuelle Patrouillenzuweisung."
- mp_clear_patrol_route_select_army: "Zu lööschende Patrouillenroute auswählen"
+ mp_clear_patrol_route_select_army: "Zu löschende Patrouillenroute auswählen"
  mp_no_patrol_routes: "Keine Armee besitzt eine konfigurierte Militärpatrouillenroute."
 
  mp_military_presence_modifier: "Militärpräsenz"
