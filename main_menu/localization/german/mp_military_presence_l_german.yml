@@ -1,6 +1,6 @@
 ﻿l_german:
  mp_military_patrol: "Militärpatrouille"
- mp_military_patrol_desc: "Weist diese Armee ihrer konfigurierten virtuellen Patrouillenroute zu. Jeden Monat erhöht sie die Militärpräsenz in ihrer aktuellen Patrouillenprovinz. Bei 90 Militärpräsenz wechselt sie zur nächsten konfigurierten Provinz."
+ mp_military_patrol_desc: "Weist eine Armee ihrer konfigurierten virtuellen Patrouillenroute zu. Jeden Monat erhöht sie die Militärpräsenz in ihrer aktuellen Patrouillenprovinz. Bei 90 Militärpräsenz wechselt sie zur nächsten konfigurierten Provinz."
 
  mp_add_patrol_province: "Provinz zur Militärpatrouille hinzufügen"
  mp_add_patrol_province_desc: "Fügt eine Provinz an die virtuelle Patrouillenroute einer Armee an. Die Provinzen werden in der Reihenfolge ihrer Auswahl besucht; nach der letzten beginnt die Route wieder bei der ersten."
@@ -9,10 +9,30 @@
  mp_no_available_armies: "Es sind keine geeigneten Armeen verfügbar."
  mp_no_available_patrol_provinces: "Es gibt keine geeignete vollständig eigene Provinz, die noch nicht Teil der Patrouillenroute dieser Armee ist."
 
+ mp_start_military_patrol: "Militärpatrouille beginnen"
+ mp_start_military_patrol_desc: "Weist eine Armee mit konfigurierter Patrouillenroute dem Militärpatrouillendienst zu."
+ mp_start_military_patrol_select_army: "Armee für Militärpatrouille auswählen"
+ mp_no_configured_patrol_armies: "Keine inaktive Armee besitzt eine konfigurierte Militärpatrouillenroute."
+
+ mp_stop_military_patrol: "Militärpatrouille beenden"
+ mp_stop_military_patrol_desc: "Beendet den Militärpatrouillendienst einer Armee, ohne ihre konfigurierte Route zu löschen."
+ mp_stop_military_patrol_select_army: "Zu beendende Militärpatrouille auswählen"
+ mp_no_active_patrol_armies: "Derzeit ist keine Armee dem Militärpatrouillendienst zugewiesen."
+
  mp_clear_patrol_route: "Militärpatrouillenroute löschen"
  mp_clear_patrol_route_desc: "Entfernt alle konfigurierten Provinzen aus der Militärpatrouillenroute einer Armee und beendet ihre virtuelle Patrouillenzuweisung."
  mp_clear_patrol_route_select_army: "Zu löschende Patrouillenroute auswählen"
  mp_no_patrol_routes: "Keine Armee besitzt eine konfigurierte Militärpatrouillenroute."
 
  mp_military_presence_modifier: "Militärpräsenz"
- mp_military_presence_modifier_desc: "Der Provinz zugewiesene Militärkräfte unterdrücken Unruhe und beschleunigen die Erholung staatlicher Kontrolle. Der Effekt skaliert mit der Militärpräsenz."
+ mp_military_presence_modifier_desc: "Der Provinz zugewiesene Militärkräfte unterdrücken Unruhe und stärken die staatliche Kontrolle. Der Effekt skaliert mit der Militärpräsenz; bei 100 Präsenz gewährt er +10 % maximale Kontrolle."
+
+ game_concept_mp_military_presence: "Militärpräsenz"
+ game_concept_mp_military_presence_desc: "Ein Provinzwert von 0 bis 100, der die dauerhafte militärische Durchsetzung staatlicher Ordnung abbildet. Patrouillierende Armeen bauen Militärpräsenz entlang ihrer konfigurierten Routen auf."
+ mapmode_mp_military_presence_name: "Militärpräsenz"
+ MAPMODE_MP_MILITARY_PRESENCE: "#T $mapmode_mp_military_presence_name$#!\nFärbt alle Locations einer Provinz anhand der Militärpräsenz dieser Provinz. Rot steht für geringe, Grün für hohe Präsenz."
+ MAPMODE_MP_MILITARY_PRESENCE_NONE: "Keine Militärpräsenz"
+ MAPMODE_MP_MILITARY_PRESENCE_LOW: "Geringe Militärpräsenz"
+ MAPMODE_MP_MILITARY_PRESENCE_HIGH: "Hohe Militärpräsenz"
+ MAPMODE_MP_MILITARY_PRESENCE_TT: "#T $mapmode_mp_military_presence_name$#!\n[ROOT.GetLocation.GetName]: #V [ROOT.GetLocation.MakeScope.GetVariable('mp_military_presence_map_value').GetValue|0]#! / 100"
+ MAPMODE_MP_MILITARY_PRESENCE_TT_NONE: "#T $mapmode_mp_military_presence_name$#!\n[ROOT.GetLocation.GetName]: #V 0#! / 100"
