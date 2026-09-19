@@ -4,7 +4,7 @@ Experimental Europa Universalis V mod that adds a scripted **Military Presence**
 
 ## MVP scope
 
-Every non-exiled army now generates Military Presence automatically in the fully owned province where it is physically stationed. No patrol route or player action is required for this baseline effect.
+Every non-exiled army generates Military Presence automatically in the fully owned province where it is physically stationed. No patrol route or player action is required for this baseline effect.
 
 Patrols are modeled **virtually**. Armies do not receive physical movement orders and their map position is not changed.
 
@@ -25,14 +25,23 @@ No configuration is required for normal stationed armies:
 
 Right-click one of your own armies to open the normal EU5 unit context menu. Military Presence adds its patrol controls above the vanilla quick unit actions.
 
-- **Add Military Patrol Province** is visible while the army is not actively patrolling. The army is already supplied by the context menu, so the Generic Action goes directly to province selection.
-- **Start Military Patrol** is visible only when the army has at least one configured patrol province and is not already patrolling.
+- **Edit Military Patrol Route** is visible while the army is not actively patrolling.
+- **Start Military Patrol** is visible only when the army has a committed route and is not already patrolling.
 - **Stop Military Patrol** is visible only while that army is actively patrolling.
-- **Clear Military Patrol Route** is visible only when a route exists and the patrol is stopped.
 
-To configure a route, right-click the army, use **Add Military Patrol Province**, choose a fully owned province, and repeat for as many provinces as desired. Then right-click the army and choose **Start Military Patrol**. Stop the patrol before editing or clearing its route.
+### Multi-province route editor
 
-The insertion order is the patrol order and route length is not fixed.
+**Edit Military Patrol Route** opens one province-selection session for the selected army. A custom checkbox column allows multiple fully owned provinces to be selected and deselected without closing the selector.
+
+The editor uses a temporary working list (`mp_patrol_edit_provinces`). Opening the editor copies the currently committed route into that list. Checkbox changes affect only the working list until the player chooses **Apply**.
+
+- **Apply** replaces the live patrol route with the working list and rebuilds the circular linked list from scratch.
+- **Cancel** discards the working list and leaves the live route unchanged.
+- **Clear Selection** empties only the working list; applying an empty list deletes the committed route.
+
+Retained provinces preserve their relative order. Newly selected provinces are appended in selection order. Removing and then re-adding a province therefore moves it to the end of the route.
+
+Patrol routes cannot be edited while the patrol assignment is active. Stop the patrol first, edit the route, then start it again.
 
 ## Military Presence map mode
 
@@ -71,18 +80,29 @@ Per-location display cache:
 
 - `mp_military_presence_map_value` — mirrored value used only by the map mode.
 
-Per-army state:
+Per-army live route state:
 
-- no patrol state is required for normal physical presence;
 - `mp_patrol_active` — scripted patrol assignment state;
-- `mp_patrol_route_configured` — scalar GUI-safe flag indicating that a route exists;
-- `mp_patrol_provinces` — membership list used for duplicate prevention;
+- `mp_patrol_route_configured` — scalar GUI-safe flag indicating that a committed route exists;
+- `mp_patrol_provinces` — committed ordered membership list;
 - `mp_patrol_head` — first province in the route;
 - `mp_patrol_tail` — last province in the route;
 - `mp_patrol_current` — current virtual patrol province;
 - `mp_patrol_next` — variable map implementing an ordered circular linked list (`province -> next province`).
 
+Per-army editor state:
+
+- `mp_patrol_edit_provinces` — temporary ordered working list;
+- `mp_patrol_edit_open` — editor working-copy state;
+- `mp_patrol_edit_dirty` — whether the working copy was changed.
+
 The monthly driver runs from `monthly_country_pulse`.
+
+The multi-select editor combines:
+
+- a Generic Action with `move_to_next_section_on_click = no`, `top_widget`, `bottom_widget`, and `selected`;
+- a custom province attribute column injected into the target table;
+- scripted GUIs that toggle working-list membership and apply/cancel the edit transaction.
 
 The right-click integration redefines vanilla `UnitContextMenu` and `UnitMarkerContextMenu` in `in_game/gui/aaa_mp_unit_context_menu.gui`. The `aaa_` prefix follows tested EU5 GUI-mod precedent for first-definition-wins loading, and the definitions live in the same `types ContextMenuSpecificTypes` collection as vanilla. Vanilla quick unit actions and the `unit_contextmenu_pre_entries` hook remain preserved.
 
@@ -96,12 +116,12 @@ For that reason this MVP does **not** claim to create a new native Carpet-Siege-
 
 - No physical army movement or map animation.
 - The native hardcoded military-objective registry cannot currently be extended through verified script definitions.
-- Province selection is one province per Generic Action invocation; there is no custom multi-select UI yet.
 - Only provinces fully owned by the army's country are accepted/processed in this MVP.
 - Contributions are fixed per army, not yet scaled by army strength/composition; splitting armies can therefore multiply the contribution in the current MVP.
 - No direct instantaneous Control increase is applied; the current implementation modifies monthly Control growth, maximum Control and unrest.
 - AI does not configure patrol routes.
 - The `UnitContextMenu` / `UnitMarkerContextMenu` redefinitions are GUI compatibility points with other mods that redefine the same vanilla types.
+- The custom selector widgets and attribute-column injection require in-game validation with `debug_mode` / `error.log` because they are compatibility-sensitive GUI/data hooks.
 
 ## Target
 

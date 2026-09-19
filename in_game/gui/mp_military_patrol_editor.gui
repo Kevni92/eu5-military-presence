@@ -1,0 +1,99 @@
+# Military Patrol multi-province route editor widgets.
+
+# Province selection table checkbox column.
+types ProvinceColumns
+{
+	type mp_patrol_route_toggle = select_cell_default {
+		size = { 48 32 }
+
+		checkbox_square_alt = {
+			parentanchor = center
+			size = { 24 24 }
+			tooltip = "mp_patrol_editor_toggle_tt"
+
+			down = "[GetScriptedGui('mp_patrol_editor_province_selected').IsShown(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
+			enabled = "[GetScriptedGui('mp_patrol_editor_toggle_province').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
+			onclick = "[GetScriptedGui('mp_patrol_editor_toggle_province').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
+		}
+	}
+}
+
+# Generic-action selection top/bottom widgets.
+types SelectTarget
+{
+	type mp_patrol_route_editor_top = widget {
+		layoutpolicy_horizontal = expanding
+		size = { -1 54 }
+
+		# A new selection view gets a fresh working copy. This is intentionally
+		# executed on widget creation so closing the editor without Apply never
+		# changes the live route; reopening reconstructs from live state.
+		state = {
+			name = mp_patrol_editor_initialize
+			trigger_on_create = yes
+			on_start = "[GetScriptedGui('mp_patrol_editor_begin').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
+		}
+
+		using = bg_text_mask_container_dark_brown
+
+		hbox = {
+			margin = { 12 6 }
+			spacing = 8
+			icon = {
+				size = { 28 28 }
+				texture = "gfx/interface/icons/unit_actions/land_levies_rally_point.dds"
+			}
+			vbox = {
+				layoutpolicy_horizontal = expanding
+				text_single = {
+					autoresize = yes
+					default_format = "#high"
+					text = "mp_patrol_editor_title"
+				}
+				text_single = {
+					autoresize = yes
+					using = Font_Size_Small
+					text = "mp_patrol_editor_instructions"
+				}
+			}
+		}
+	}
+
+	type mp_patrol_route_editor_bottom = widget {
+		layoutpolicy_horizontal = expanding
+		size = { -1 52 }
+		using = bg_text_mask_container_dark_brown
+
+		hbox = {
+			margin = { 10 8 }
+			spacing = 8
+
+			button_regular = {
+				layoutpolicy_horizontal = expanding
+				size = { -1 32 }
+				text = "mp_patrol_editor_clear"
+				tooltip = "mp_patrol_editor_clear_tt"
+				enabled = "[GetScriptedGui('mp_patrol_editor_clear').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
+				onclick = "[GetScriptedGui('mp_patrol_editor_clear').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
+			}
+
+			button_regular = {
+				layoutpolicy_horizontal = expanding
+				size = { -1 32 }
+				text = "mp_patrol_editor_cancel"
+				onclick = "[GetScriptedGui('mp_patrol_editor_cancel').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
+				onclick = "[LateralView.Close]"
+			}
+
+			button_regular = {
+				layoutpolicy_horizontal = expanding
+				size = { -1 32 }
+				text = "mp_patrol_editor_apply"
+				tooltip = "mp_patrol_editor_apply_tt"
+				enabled = "[GetScriptedGui('mp_patrol_editor_apply').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
+				onclick = "[GetScriptedGui('mp_patrol_editor_apply').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
+				onclick = "[LateralView.Close]"
+			}
+		}
+	}
+}

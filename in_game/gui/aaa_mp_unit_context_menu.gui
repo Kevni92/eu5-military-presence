@@ -11,26 +11,27 @@ types ContextMenuSpecificTypes
 	type MpPatrolContextMenuActions = ContextMenuEntryListSubSection {
 		visible = "[And(Unit.IsArmy, Unit.GetCountry.IsPlayer)]"
 
-		# Route editing is available only while the patrol is stopped.
+		# Route editing is available only while the patrol is stopped. The editor
+		# supports multi-province add/remove in one selection session.
 		ContextMenuActionEntry = {
 			visible = "[Not(Unit.MakeScope.GetVariable('mp_patrol_active').IsSet)]"
-			title = "mp_add_patrol_province"
+			title = "mp_edit_patrol_route"
 			actor = "[Player]"
 			parameter = {
 				parameter_name = "mp_patrol_unit"
 				parameter_value = "[Unit.MakeScope]"
 			}
-			left_action = { action_name = "mp_add_patrol_province" }
+			left_action = { action_name = "mp_edit_patrol_route" }
 
 			blockoverride "entry_icon_texture" {
 				texture = "gfx/interface/icons/unit_actions/land_levies_rally_point.dds"
 			}
 			blockoverride "entry_text" {
-				text = "mp_add_patrol_province"
+				text = "mp_edit_patrol_route"
 			}
 		}
 
-		# Start only after a route exists and only while inactive.
+		# Start only after a committed route exists and only while inactive.
 		ContextMenuActionEntry = {
 			visible = "[And(Unit.MakeScope.GetVariable('mp_patrol_route_configured').IsSet, Not(Unit.MakeScope.GetVariable('mp_patrol_active').IsSet))]"
 			title = "mp_start_military_patrol"
@@ -68,25 +69,6 @@ types ContextMenuSpecificTypes
 			}
 			blockoverride "button_texture" {
 				using = button_regular_red_texture
-			}
-		}
-
-		# Clearing is only offered for a configured, stopped route.
-		ContextMenuActionEntry = {
-			visible = "[And(Unit.MakeScope.GetVariable('mp_patrol_route_configured').IsSet, Not(Unit.MakeScope.GetVariable('mp_patrol_active').IsSet))]"
-			title = "mp_clear_patrol_route"
-			actor = "[Player]"
-			parameter = {
-				parameter_name = "mp_patrol_unit"
-				parameter_value = "[Unit.MakeScope]"
-			}
-			left_action = { action_name = "mp_clear_patrol_route" }
-
-			blockoverride "entry_icon_texture" {
-				texture = "gfx/interface/icons/unit_actions/regulars.dds"
-			}
-			blockoverride "entry_text" {
-				text = "mp_clear_patrol_route"
 			}
 		}
 	}

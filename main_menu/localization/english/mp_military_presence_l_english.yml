@@ -2,12 +2,21 @@
  mp_military_patrol: "Military Patrol"
  mp_military_patrol_desc: "Assign an army to its configured virtual patrol route. Each month it builds Military Presence in its current patrol province. At 90 Military Presence it advances to the next configured province."
 
- mp_add_patrol_province: "Add Military Patrol Province"
- mp_add_patrol_province_desc: "Append a province to an army's virtual Military Patrol route. Provinces are visited in the order they were added and the route loops after the final province."
- mp_add_patrol_province_select_army: "Select Patrol Army"
- mp_add_patrol_province_select_province: "Select Province to Append"
+ mp_edit_patrol_route: "Edit Military Patrol Route"
+ mp_edit_patrol_route_desc: "Open the route editor for an army. Multiple fully owned provinces can be added or removed in one editing session. Changes are not committed to the live route until Apply is pressed."
+ mp_edit_patrol_route_select_army: "Select Patrol Army"
+ mp_edit_patrol_route_select_provinces: "Select Patrol Provinces"
  mp_no_available_armies: "There are no available armies."
- mp_no_available_patrol_provinces: "There are no eligible fully owned provinces that are not already in this army's patrol route."
+ mp_no_available_patrol_provinces: "There are no eligible fully owned provinces for this patrol route."
+
+ mp_patrol_editor_title: "Edit Military Patrol Route"
+ mp_patrol_editor_instructions: "Use the checkboxes to select or remove multiple provinces. Existing provinces keep their relative order; newly selected provinces are appended."
+ mp_patrol_editor_toggle_tt: "Include or exclude this province from the patrol route."
+ mp_patrol_editor_clear: "Clear Selection"
+ mp_patrol_editor_clear_tt: "Remove every province from the working copy. The live route changes only after Apply."
+ mp_patrol_editor_cancel: "Cancel"
+ mp_patrol_editor_apply: "Apply"
+ mp_patrol_editor_apply_tt: "Replace the existing patrol route with the currently selected provinces. An empty selection deletes the route."
 
  mp_start_military_patrol: "Start Military Patrol"
  mp_start_military_patrol_desc: "Assign an army with a configured patrol route to Military Patrol duty."
@@ -18,11 +27,6 @@
  mp_stop_military_patrol_desc: "End Military Patrol duty for an army without deleting its configured route."
  mp_stop_military_patrol_select_army: "Select Military Patrol to Stop"
  mp_no_active_patrol_armies: "No army is currently assigned to Military Patrol duty."
-
- mp_clear_patrol_route: "Clear Military Patrol Route"
- mp_clear_patrol_route_desc: "Remove every configured province from an army's Military Patrol route and stop its virtual patrol assignment."
- mp_clear_patrol_route_select_army: "Select Patrol Route to Clear"
- mp_no_patrol_routes: "No army has a configured Military Patrol route."
 
  mp_military_presence_modifier: "Military Presence"
  mp_military_presence_modifier_desc: "Military forces assigned to patrol this province suppress unrest and strengthen state control. The effect scales with Military Presence; at 100 Presence it grants +10% maximum Control."

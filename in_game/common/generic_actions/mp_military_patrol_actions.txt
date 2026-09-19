@@ -1,13 +1,11 @@
-mp_add_patrol_province = {
+mp_edit_patrol_route = {
 	type = owncountry
 	show_message = no
 	show_in_gui_list = no
 	ai_tick = never
 
 	potential = {
-		scope:actor = {
-			regular_army_size > 0
-		}
+		scope:actor = { regular_army_size > 0 }
 	}
 
 	allow = {
@@ -17,7 +15,7 @@ mp_add_patrol_province = {
 		looking_for_a = unit
 		source = actor
 		target_flag = mp_patrol_unit
-		name = "mp_add_patrol_province_select_army"
+		name = "mp_edit_patrol_route_select_army"
 		none_available_msg_key = "mp_no_available_armies"
 		column = { data = name }
 		column = { data = unit_location }
@@ -28,12 +26,18 @@ mp_add_patrol_province = {
 		}
 	}
 
+	# This selection stage deliberately stays open. The custom checkbox column
+	# mutates a temporary route through scripted GUIs; Apply commits it later.
 	select_trigger = {
 		looking_for_a = province
 		source = actor
-		target_flag = mp_patrol_province
-		name = "mp_add_patrol_province_select_province"
+		target_flag = mp_patrol_editor_focus_province
+		name = "mp_edit_patrol_route_select_provinces"
 		none_available_msg_key = "mp_no_available_patrol_provinces"
+		move_to_next_section_on_click = no
+		top_widget = mp_patrol_route_editor_top
+		bottom_widget = mp_patrol_route_editor_bottom
+		column = { data = mp_patrol_route_toggle }
 		column = { data = name }
 		column = { data = population }
 		visible = {
@@ -45,38 +49,39 @@ mp_add_patrol_province = {
 				owner = scope:actor
 				is_army = yes
 				NOT = { has_variable = mp_patrol_active }
-				NOT = {
-					is_target_in_variable_list = {
-						name = mp_patrol_provinces
-						target = root
+			}
+		}
+		selected = {
+			scope:mp_patrol_unit = {
+				OR = {
+					AND = {
+						has_variable = mp_patrol_edit_open
+						is_target_in_variable_list = {
+							name = mp_patrol_edit_provinces
+							target = root
+						}
+					}
+					AND = {
+						NOT = { has_variable = mp_patrol_edit_open }
+						is_target_in_variable_list = {
+							name = mp_patrol_provinces
+							target = root
+						}
 					}
 				}
 			}
 		}
 	}
 
+	# Route changes are committed by the editor's scripted GUI Apply button.
 	effect = {
-		if = {
-			limit = {
-				exists = scope:mp_patrol_unit
-				exists = scope:mp_patrol_province
-				scope:mp_patrol_unit = {
-					owner = scope:actor
-					is_army = yes
-					NOT = { has_variable = mp_patrol_active }
-				}
-			}
-			scope:mp_patrol_unit = {
-				mp_add_patrol_province_effect = yes
-			}
-		}
 	}
 
 	ai_will_do = { value = -1 }
 }
 
 # Scripted army assignment replacing the former Unit Ability.
-# This remains an ordinary script state; it does not register a new hardcoded
+# This remains ordinary script state; it does not register a new hardcoded
 # military objective type such as Carpet Siege.
 mp_start_military_patrol = {
 	type = owncountry
@@ -169,56 +174,6 @@ mp_stop_military_patrol = {
 			}
 			scope:mp_patrol_unit = {
 				remove_variable = mp_patrol_active
-			}
-		}
-	}
-
-	ai_will_do = { value = -1 }
-}
-
-mp_clear_patrol_route = {
-	type = owncountry
-	show_message = no
-	show_in_gui_list = no
-	ai_tick = never
-
-	potential = {
-		scope:actor = { regular_army_size > 0 }
-	}
-
-	allow = {
-	}
-
-	select_trigger = {
-		looking_for_a = unit
-		source = actor
-		target_flag = mp_patrol_unit
-		name = "mp_clear_patrol_route_select_army"
-		none_available_msg_key = "mp_no_patrol_routes"
-		column = { data = name }
-		column = { data = unit_location }
-		visible = {
-			is_army = yes
-			owner = scope:actor
-			has_variable = mp_patrol_route_configured
-			has_variable_list = mp_patrol_provinces
-			NOT = { has_variable = mp_patrol_active }
-		}
-	}
-
-	effect = {
-		if = {
-			limit = {
-				exists = scope:mp_patrol_unit
-				scope:mp_patrol_unit = {
-					owner = scope:actor
-					is_army = yes
-					has_variable = mp_patrol_route_configured
-					NOT = { has_variable = mp_patrol_active }
-				}
-			}
-			scope:mp_patrol_unit = {
-				mp_clear_patrol_route_effect = yes
 			}
 		}
 	}

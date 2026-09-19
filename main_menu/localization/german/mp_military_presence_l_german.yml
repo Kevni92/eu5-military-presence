@@ -2,12 +2,21 @@
  mp_military_patrol: "Militärpatrouille"
  mp_military_patrol_desc: "Weist eine Armee ihrer konfigurierten virtuellen Patrouillenroute zu. Jeden Monat erhöht sie die Militärpräsenz in ihrer aktuellen Patrouillenprovinz. Bei 90 Militärpräsenz wechselt sie zur nächsten konfigurierten Provinz."
 
- mp_add_patrol_province: "Provinz zur Militärpatrouille hinzufügen"
- mp_add_patrol_province_desc: "Fügt eine Provinz an die virtuelle Patrouillenroute einer Armee an. Die Provinzen werden in der Reihenfolge ihrer Auswahl besucht; nach der letzten beginnt die Route wieder bei der ersten."
- mp_add_patrol_province_select_army: "Patrouillenarmee auswählen"
- mp_add_patrol_province_select_province: "Provinz zum Anhängen auswählen"
+ mp_edit_patrol_route: "Patrouillenroute bearbeiten"
+ mp_edit_patrol_route_desc: "Öffnet den Routen-Editor für eine Armee. Mehrere vollständig eigene Provinzen können in einem Arbeitsgang hinzugefügt oder entfernt werden. Änderungen werden erst mit Übernehmen auf die echte Route angewandt."
+ mp_edit_patrol_route_select_army: "Patrouillenarmee auswählen"
+ mp_edit_patrol_route_select_provinces: "Patrouillenprovinzen auswählen"
  mp_no_available_armies: "Es sind keine geeigneten Armeen verfügbar."
- mp_no_available_patrol_provinces: "Es gibt keine geeignete vollständig eigene Provinz, die noch nicht Teil der Patrouillenroute dieser Armee ist."
+ mp_no_available_patrol_provinces: "Es gibt keine geeigneten vollständig eigenen Provinzen für diese Patrouillenroute."
+
+ mp_patrol_editor_title: "Patrouillenroute bearbeiten"
+ mp_patrol_editor_instructions: "Mehrere Provinzen per Häkchen auswählen oder wieder entfernen. Die Reihenfolge bestehender Provinzen bleibt erhalten; neu ausgewählte Provinzen werden hinten angefügt."
+ mp_patrol_editor_toggle_tt: "Provinz in der Patrouillenroute ein- oder ausschließen."
+ mp_patrol_editor_clear: "Auswahl leeren"
+ mp_patrol_editor_clear_tt: "Entfernt alle Provinzen aus der Arbeitskopie. Die echte Route wird erst durch Übernehmen geändert."
+ mp_patrol_editor_cancel: "Abbrechen"
+ mp_patrol_editor_apply: "Übernehmen"
+ mp_patrol_editor_apply_tt: "Ersetzt die bestehende Patrouillenroute durch die aktuell ausgewählten Provinzen. Eine leere Auswahl löscht die Route."
 
  mp_start_military_patrol: "Militärpatrouille beginnen"
  mp_start_military_patrol_desc: "Weist eine Armee mit konfigurierter Patrouillenroute dem Militärpatrouillendienst zu."
@@ -18,11 +27,6 @@
  mp_stop_military_patrol_desc: "Beendet den Militärpatrouillendienst einer Armee, ohne ihre konfigurierte Route zu löschen."
  mp_stop_military_patrol_select_army: "Zu beendende Militärpatrouille auswählen"
  mp_no_active_patrol_armies: "Derzeit ist keine Armee dem Militärpatrouillendienst zugewiesen."
-
- mp_clear_patrol_route: "Militärpatrouillenroute löschen"
- mp_clear_patrol_route_desc: "Entfernt alle konfigurierten Provinzen aus der Militärpatrouillenroute einer Armee und beendet ihre virtuelle Patrouillenzuweisung."
- mp_clear_patrol_route_select_army: "Zu löschende Patrouillenroute auswählen"
- mp_no_patrol_routes: "Keine Armee besitzt eine konfigurierte Militärpatrouillenroute."
 
  mp_military_presence_modifier: "Militärpräsenz"
  mp_military_presence_modifier_desc: "Der Provinz zugewiesene Militärkräfte unterdrücken Unruhe und stärken die staatliche Kontrolle. Der Effekt skaliert mit der Militärpräsenz; bei 100 Präsenz gewährt er +10 % maximale Kontrolle."

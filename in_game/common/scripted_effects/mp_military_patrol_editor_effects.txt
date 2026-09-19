@@ -1,0 +1,92 @@
+# Military Patrol route editor helpers.
+#
+# Editing happens against mp_patrol_edit_provinces. The live linked-list route is
+# left untouched until Apply, then rebuilt in list order with the existing
+# mp_add_patrol_province_effect helper.
+
+# Scope: unit
+mp_begin_patrol_route_editor_effect = {
+	clear_variable_list = mp_patrol_edit_provinces
+	set_variable = { name = mp_patrol_edit_open value = 1 }
+	remove_variable = mp_patrol_edit_dirty
+
+	# Preserve the live route's order in the working copy.
+	if = {
+		limit = { has_variable_list = mp_patrol_provinces }
+		save_scope_as = mp_patrol_editor_unit
+		every_in_list = {
+			variable = mp_patrol_provinces
+			save_scope_as = mp_patrol_editor_copy_province
+			scope:mp_patrol_editor_unit = {
+				add_to_variable_list = {
+					name = mp_patrol_edit_provinces
+					target = scope:mp_patrol_editor_copy_province
+				}
+			}
+		}
+	}
+}
+
+# Scope: unit; requires scope:mp_patrol_province.
+mp_toggle_patrol_route_editor_province_effect = {
+	if = {
+		limit = {
+			is_target_in_variable_list = {
+				name = mp_patrol_edit_provinces
+				target = scope:mp_patrol_province
+			}
+		}
+		remove_list_variable = {
+			name = mp_patrol_edit_provinces
+			target = scope:mp_patrol_province
+		}
+	}
+	else = {
+		add_to_variable_list = {
+			name = mp_patrol_edit_provinces
+			target = scope:mp_patrol_province
+		}
+	}
+	set_variable = { name = mp_patrol_edit_dirty value = 1 }
+}
+
+# Scope: unit
+mp_clear_patrol_route_editor_effect = {
+	clear_variable_list = mp_patrol_edit_provinces
+	set_variable = { name = mp_patrol_edit_open value = 1 }
+	set_variable = { name = mp_patrol_edit_dirty value = 1 }
+}
+
+# Scope: unit
+mp_cancel_patrol_route_editor_effect = {
+	clear_variable_list = mp_patrol_edit_provinces
+	remove_variable = mp_patrol_edit_open
+	remove_variable = mp_patrol_edit_dirty
+}
+
+# Scope: unit
+mp_apply_patrol_route_editor_effect = {
+	save_scope_as = mp_patrol_editor_unit
+
+	# The editor is unavailable while active, so resetting live route storage is
+	# safe here. mp_clear_patrol_route_effect intentionally does not touch the
+	# working-copy variables.
+	mp_clear_patrol_route_effect = yes
+
+	# Rebuild the circular linked list in working-list order. Existing retained
+	# provinces keep their relative order; newly selected provinces append.
+	if = {
+		limit = { has_variable_list = mp_patrol_edit_provinces }
+		every_in_list = {
+			variable = mp_patrol_edit_provinces
+			save_scope_as = mp_patrol_province
+			scope:mp_patrol_editor_unit = {
+				mp_add_patrol_province_effect = yes
+			}
+		}
+	}
+
+	clear_variable_list = mp_patrol_edit_provinces
+	remove_variable = mp_patrol_edit_open
+	remove_variable = mp_patrol_edit_dirty
+}

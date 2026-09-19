@@ -1,0 +1,159 @@
+# Scripted-GUI bridge for the Military Patrol multi-province editor.
+# Root scope is the player country. Unit/province are passed as saved scopes
+# from the selection GUI.
+
+mp_patrol_editor_begin = {
+	scope = country
+	saved_scopes = { mp_patrol_unit }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			NOT = { has_variable = mp_patrol_active }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				scope:mp_patrol_unit ?= {
+					is_army = yes
+					owner = root
+					NOT = { has_variable = mp_patrol_active }
+				}
+			}
+			scope:mp_patrol_unit = {
+				mp_begin_patrol_route_editor_effect = yes
+			}
+		}
+	}
+}
+
+mp_patrol_editor_toggle_province = {
+	scope = country
+	saved_scopes = { mp_patrol_unit mp_patrol_province }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			NOT = { has_variable = mp_patrol_active }
+		}
+		scope:mp_patrol_province ?= {
+			any_location_in_province = {
+				owner = root
+				count = all
+			}
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				scope:mp_patrol_unit ?= {
+					is_army = yes
+					owner = root
+					NOT = { has_variable = mp_patrol_active }
+				}
+				scope:mp_patrol_province ?= {
+					any_location_in_province = {
+						owner = root
+						count = all
+					}
+				}
+			}
+			scope:mp_patrol_unit = {
+				mp_toggle_patrol_route_editor_province_effect = yes
+			}
+		}
+	}
+}
+
+# Used by each checkbox's down state. If the editor has not initialized yet,
+# fall back to the live route so the first rendered frame is still correct.
+mp_patrol_editor_province_selected = {
+	scope = country
+	saved_scopes = { mp_patrol_unit mp_patrol_province }
+
+	is_shown = {
+		scope:mp_patrol_unit ?= {
+			OR = {
+				AND = {
+					has_variable = mp_patrol_edit_open
+					is_target_in_variable_list = {
+						name = mp_patrol_edit_provinces
+						target = scope:mp_patrol_province
+					}
+				}
+				AND = {
+					NOT = { has_variable = mp_patrol_edit_open }
+					is_target_in_variable_list = {
+						name = mp_patrol_provinces
+						target = scope:mp_patrol_province
+					}
+				}
+			}
+		}
+	}
+
+	effect = { }
+}
+
+mp_patrol_editor_clear = {
+	scope = country
+	saved_scopes = { mp_patrol_unit }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			NOT = { has_variable = mp_patrol_active }
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit ?= {
+			mp_clear_patrol_route_editor_effect = yes
+		}
+	}
+}
+
+mp_patrol_editor_cancel = {
+	scope = country
+	saved_scopes = { mp_patrol_unit }
+
+	effect = {
+		scope:mp_patrol_unit ?= {
+			mp_cancel_patrol_route_editor_effect = yes
+		}
+	}
+}
+
+mp_patrol_editor_apply = {
+	scope = country
+	saved_scopes = { mp_patrol_unit }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			NOT = { has_variable = mp_patrol_active }
+		}
+	}
+
+	effect = {
+		if = {
+			limit = {
+				scope:mp_patrol_unit ?= {
+					is_army = yes
+					owner = root
+					NOT = { has_variable = mp_patrol_active }
+				}
+			}
+			scope:mp_patrol_unit = {
+				mp_apply_patrol_route_editor_effect = yes
+			}
+		}
+	}
+}

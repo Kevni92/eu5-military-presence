@@ -1,0 +1,10 @@
+# Add a checkbox column to province target selection without replacing vanilla
+# province attribute columns. Vanilla 20_province.txt is loaded before this file.
+INJECT:province = {
+	mp_patrol_route_toggle = {
+		widget = mp_patrol_route_toggle
+		width = 48
+		fixed_height = 32
+		is_constant_width = yes
+	}
+}
