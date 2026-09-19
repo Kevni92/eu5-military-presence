@@ -4,12 +4,13 @@
 #   mp_military_presence = 0..100
 #
 # Unit route state:
-#   mp_patrol_provinces : membership list
-#   mp_patrol_head      : first province scope
-#   mp_patrol_tail      : last province scope
-#   mp_patrol_current   : current virtual province scope
-#   mp_patrol_next      : province -> next province scope (circular linked list)
-#   mp_patrol_active    : scripted patrol assignment state
+#   mp_patrol_provinces       : membership list
+#   mp_patrol_head            : first province scope
+#   mp_patrol_tail            : last province scope
+#   mp_patrol_current         : current virtual province scope
+#   mp_patrol_next            : province -> next province scope (circular linked list)
+#   mp_patrol_route_configured: GUI-safe route-state flag
+#   mp_patrol_active          : scripted patrol assignment state
 
 # Scope: unit
 # Requires scope:mp_patrol_province from the Generic Action.
@@ -85,6 +86,13 @@ mp_add_patrol_province_effect = {
 			value = scope:mp_patrol_province
 		}
 	}
+
+	# Simple scalar mirror used by GUI visibility checks. GUI script can safely
+	# query Scope.GetVariable(...).IsSet but cannot evaluate has_variable_list.
+	set_variable = {
+		name = mp_patrol_route_configured
+		value = 1
+	}
 }
 
 # Scope: unit
@@ -94,6 +102,7 @@ mp_clear_patrol_route_effect = {
 	remove_variable = mp_patrol_head
 	remove_variable = mp_patrol_tail
 	remove_variable = mp_patrol_current
+	remove_variable = mp_patrol_route_configured
 	remove_variable = mp_patrol_active
 }
 
