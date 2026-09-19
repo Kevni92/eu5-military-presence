@@ -1,0 +1,87 @@
+@mp_presence_zoom_step_near = 2
+@mp_presence_gradient_alpha_inside = 1
+@mp_presence_gradient_alpha_outside = 1
+@mp_presence_gradient_width = 0.25
+@mp_presence_gradient_color_mult = 0.9
+@mp_presence_edge_width = 0
+@mp_presence_edge_sharpness = 0.01
+@mp_presence_edge_alpha = 0
+@mp_presence_edge_color_mult = 0
+@mp_presence_before_lighting_blend = 0.5
+@mp_presence_after_lighting_blend = 0.5
+
+mp_military_presence = {
+	map_color = {
+		if = {
+			limit = { is_ownable = no }
+			value = rgb { 90 90 90 }
+		}
+		else_if = {
+			limit = { has_variable = mp_military_presence_map_value }
+			lerp = {
+				min_color = rgb { 150 45 45 }
+				max_color = rgb { 40 170 70 }
+				factor = {
+					value = var:mp_military_presence_map_value
+					divide = 100
+					min = 0
+					max = 1
+				}
+			}
+		}
+		else = {
+			value = rgb { 110 110 110 }
+		}
+	}
+
+	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_NONE" color = rgb { 110 110 110 } }
+	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_LOW" color = rgb { 150 45 45 } }
+	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_HIGH" color = rgb { 40 170 70 } }
+
+	tooltip_key = {
+		if = {
+			limit = { has_variable = mp_military_presence_map_value }
+			value = MAPMODE_MP_MILITARY_PRESENCE_TT
+		}
+		else = {
+			value = MAPMODE_MP_MILITARY_PRESENCE_TT_NONE
+		}
+	}
+
+	small_map_names = location
+	medium_map_names = location
+	large_map_names = location
+
+	small_tooltip_context = location
+	medium_tooltip_context = location
+	large_tooltip_context = location
+
+	fill_in_impassable = yes
+	enable_snow = no
+	flatmap_behaviour = always
+	use_fow = no
+
+	category = military
+	index = 1
+
+	map_markers = {
+		all = no
+	}
+
+	gradient_parameters = {
+		zoom_step = @mp_presence_zoom_step_near
+		gradient_alpha_inside = @mp_presence_gradient_alpha_inside
+		gradient_alpha_outside = @mp_presence_gradient_alpha_outside
+		gradient_width = @mp_presence_gradient_width
+		gradient_color_mult = @mp_presence_gradient_color_mult
+		edge_width = @mp_presence_edge_width
+		edge_sharpness = @mp_presence_edge_sharpness
+		edge_alpha = @mp_presence_edge_alpha
+		edge_color_mult = @mp_presence_edge_color_mult
+		before_lighting_blend = @mp_presence_before_lighting_blend
+		after_lighting_blend = @mp_presence_after_lighting_blend
+	}
+
+	color_refresh_counters = { Day }
+	color_and_names_refresh_counters = { Day }
+}
