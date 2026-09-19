@@ -9,7 +9,7 @@
 #   mp_patrol_tail      : last province scope
 #   mp_patrol_current   : current virtual province scope
 #   mp_patrol_next      : province -> next province scope (circular linked list)
-#   mp_patrol_active    : set by the Military Patrol unit ability
+#   mp_patrol_active    : scripted patrol assignment state
 
 # Scope: unit
 # Requires scope:mp_patrol_province from the Generic Action.
@@ -60,7 +60,6 @@ mp_add_patrol_province_effect = {
 			save_scope_as = mp_patrol_route_head
 		}
 
-		# Rewire old tail -> new province.
 		remove_from_variable_map = {
 			name = mp_patrol_next
 			key = scope:mp_old_patrol_tail
@@ -71,7 +70,6 @@ mp_add_patrol_province_effect = {
 			value = scope:mp_patrol_province
 		}
 
-		# Close the ring: new province -> route head.
 		add_to_variable_map = {
 			name = mp_patrol_next
 			key = scope:mp_patrol_province
@@ -97,6 +95,29 @@ mp_clear_patrol_route_effect = {
 	remove_variable = mp_patrol_tail
 	remove_variable = mp_patrol_current
 	remove_variable = mp_patrol_active
+}
+
+# Scope: province
+# Map modes are evaluated on locations. Mirror the authoritative province value
+# to every location in the province so the complete province receives one color.
+mp_sync_military_presence_map_effect = {
+	if = {
+		limit = {
+			has_variable = mp_military_presence
+			var:mp_military_presence > 0
+		}
+		every_location_in_province = {
+			set_variable = {
+				name = mp_military_presence_map_value
+				value = prev.var:mp_military_presence
+			}
+		}
+	}
+	else = {
+		every_location_in_province = {
+			remove_variable = mp_military_presence_map_value
+		}
+	}
 }
 
 # Scope: province
@@ -133,6 +154,8 @@ mp_refresh_military_presence_modifier_effect = {
 		}
 		remove_province_modifier = mp_military_presence_modifier
 	}
+
+	mp_sync_military_presence_map_effect = yes
 }
 
 # Scope: province
@@ -270,8 +293,6 @@ mp_process_patrol_army_effect = {
 			}
 		}
 		else = {
-			# The province is no longer fully owned by this army's country.
-			# Keep the configured route intact and virtually skip it for this cycle.
 			mp_advance_patrol_route_effect = yes
 		}
 	}
@@ -279,7 +300,6 @@ mp_process_patrol_army_effect = {
 
 # Scope: country
 mp_monthly_country_presence_effect = {
-	# Existing presence decays before patrol armies contribute this month.
 	every_province = {
 		limit = {
 			has_variable = mp_military_presence
