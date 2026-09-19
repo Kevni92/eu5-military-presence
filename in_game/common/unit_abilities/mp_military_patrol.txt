@@ -1,0 +1,36 @@
+mp_military_patrol = {
+	duration = -1
+	toggle = yes
+	army_only = yes
+	map = yes
+
+	allow = {
+		is_army = yes
+		in_combat = no
+		is_exiled = no
+		has_variable_list = mp_patrol_provinces
+	}
+
+	start_effect = {
+		set_variable = { name = mp_patrol_active value = 1 }
+	}
+
+	finish_effect = {
+		remove_variable = mp_patrol_active
+	}
+
+	finished_when = {
+		OR = {
+			is_exiled = yes
+			NOT = { has_variable_list = mp_patrol_provinces }
+		}
+	}
+
+	ai_will_do = {
+		value = -1
+	}
+
+	ai_will_revoke = {
+		value = 1
+	}
+}
