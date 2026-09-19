@@ -1,0 +1,4 @@
+mp_military_presence_modifier = {
+	local_unrest = -0.10
+	local_monthly_control = 0.01
+}
