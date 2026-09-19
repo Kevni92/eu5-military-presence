@@ -1,0 +1,10 @@
+{
+  "name": "Military Presence",
+  "id": "eu5_military_presence",
+  "version": "0.1.0",
+  "supported_game_version": "1.3.*",
+  "short_description": "Adds virtual army patrol routes and a province-level Military Presence system.",
+  "tags": ["Gameplay", "Military", "Utilities"],
+  "relationships": [],
+  "game_custom_data": {}
+}
