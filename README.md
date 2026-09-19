@@ -4,15 +4,24 @@ Experimental Europa Universalis V mod that adds a scripted **Military Presence**
 
 ## MVP scope
 
+Every non-exiled army now generates Military Presence automatically in the fully owned province where it is physically stationed. No patrol route or player action is required for this baseline effect.
+
 Patrols are modeled **virtually**. Armies do not receive physical movement orders and their map position is not changed.
 
 A patrol army maintains an ordered, circular route of provinces. While the army is assigned to Military Patrol duty, it contributes Military Presence to its current virtual province. Once that province reaches the configured threshold (90), the army advances to the next province in its route. After the last province it wraps back to the first.
 
-Military Patrol is no longer implemented as a `unit_ability`. The assignment is stored as scripted state on the army (`mp_patrol_active`).
+Military Patrol is not implemented as a `unit_ability`. The assignment is stored as scripted state on the army (`mp_patrol_active`). An army with an active patrol contributes through its virtual patrol route instead of simultaneously contributing at its physical location, preventing double counting of the same army.
 
-### Route setup
+### Using the system in game
 
-The MVP uses vanilla Generic Actions instead of a custom multi-select GUI:
+No configuration is required for normal stationed armies:
+
+1. Station one of your armies in a province that you fully own.
+2. Let a monthly pulse pass.
+3. Open the **Military Presence** map mode in the Military map-mode category.
+4. The province should gain Military Presence each month while the army remains there.
+
+To configure a virtual patrol route:
 
 1. Use **Add Military Patrol Province**.
 2. Select one of your armies.
@@ -39,14 +48,17 @@ Military Presence remains authoritative at province scope. Because EU5 map-mode 
 
 - Military Presence range: `0..100`
 - Patrol switch threshold: `90`
-- Active patrol gain: `+12` per month
+- Stationed-army contribution: `+12` per army per month
+- Active patrol contribution: `+12` per army per month
 - Passive decay: `-2` per month
 - At 100 Military Presence, the scaled province modifier provides:
   - `-0.10` local unrest
   - `+0.01` local monthly control
   - `+0.10` local maximum control
 
-The modifier scales linearly with Military Presence. Therefore 50 Presence gives half of those effects, including +5% maximum Control; 100 Presence gives +10% maximum Control.
+Decay is processed before army contributions. A province already carrying Military Presence therefore gains a net `+10` in a month with one contributing army (`-2 +12`). Multiple unassigned armies physically stationed in the same fully owned province currently stack their fixed contributions.
+
+The province modifier scales linearly with Military Presence. Therefore 50 Presence gives half of those effects, including +5% maximum Control; 100 Presence gives +10% maximum Control.
 
 ## Technical design
 
@@ -60,11 +72,12 @@ Per-location display cache:
 
 Per-army state:
 
-- `mp_patrol_active` — scripted patrol assignment state.
-- `mp_patrol_provinces` — membership list used for duplicate prevention.
-- `mp_patrol_head` — first province in the route.
-- `mp_patrol_tail` — last province in the route.
-- `mp_patrol_current` — current virtual patrol province.
+- no patrol state is required for normal physical presence;
+- `mp_patrol_active` — scripted patrol assignment state;
+- `mp_patrol_provinces` — membership list used for duplicate prevention;
+- `mp_patrol_head` — first province in the route;
+- `mp_patrol_tail` — last province in the route;
+- `mp_patrol_current` — current virtual patrol province;
 - `mp_patrol_next` — variable map implementing an ordered circular linked list (`province -> next province`).
 
 The monthly driver runs from `monthly_country_pulse`.
@@ -73,7 +86,7 @@ The monthly driver runs from `monthly_country_pulse`.
 
 EU5's army Actions/Objectives pane renders engine-provided `UnitActionItem` objects. Hardcoded military objectives such as Carpet Siege are not exposed as a scriptable `common/` type that a mod can register a new objective into.
 
-For that reason this MVP removes the former Unit Ability but does **not** claim to create a new native Carpet-Siege-style engine objective. Start/Stop Military Patrol are scripted actions. Placing a custom button visually inside the same Army Actions/Objectives panel requires overriding `single_unit_window.gui`, which should be treated as a separate compatibility-sensitive GUI patch.
+For that reason this MVP does **not** claim to create a new native Carpet-Siege-style engine objective. Start/Stop Military Patrol are scripted actions. Placing a custom button visually inside the same Army Actions/Objectives panel requires overriding `single_unit_window.gui`, which should be treated as a separate compatibility-sensitive GUI patch.
 
 ## Known MVP limitations
 
@@ -81,7 +94,7 @@ For that reason this MVP removes the former Unit Ability but does **not** claim 
 - The native hardcoded military-objective registry cannot currently be extended through verified script definitions.
 - Province selection is one province per Generic Action invocation; there is no custom multi-select UI yet.
 - Only provinces fully owned by the army's country are accepted/processed in this MVP.
-- Patrol contribution is a fixed monthly amount, not yet scaled by army strength/composition.
+- Contributions are fixed per army, not yet scaled by army strength/composition; splitting armies can therefore multiply the contribution in the current MVP.
 - No direct instantaneous Control increase is applied; the current implementation modifies monthly Control growth, maximum Control and unrest.
 - AI does not configure patrol routes.
 
