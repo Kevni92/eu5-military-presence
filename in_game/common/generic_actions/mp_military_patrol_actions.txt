@@ -18,17 +18,9 @@ mp_add_patrol_province = {
 		target_flag = mp_patrol_unit
 		name = "mp_add_patrol_province_select_army"
 		none_available_msg_key = "mp_no_available_armies"
-
-		column = {
-			data = name
-		}
-		column = {
-			data = unit_location
-		}
-
-		visible = {
-			is_army = yes
-		}
+		column = { data = name }
+		column = { data = unit_location }
+		visible = { is_army = yes }
 	}
 
 	select_trigger = {
@@ -37,16 +29,9 @@ mp_add_patrol_province = {
 		target_flag = mp_patrol_province
 		name = "mp_add_patrol_province_select_province"
 		none_available_msg_key = "mp_no_available_patrol_provinces"
-
-		column = {
-			data = name
-		}
-		column = {
-			data = population
-		}
-
+		column = { data = name }
+		column = { data = population }
 		visible = {
-			# MVP routes are limited to provinces fully owned by the acting country.
 			any_location_in_province = {
 				owner = scope:actor
 				count = all
@@ -68,9 +53,81 @@ mp_add_patrol_province = {
 		}
 	}
 
-	ai_will_do = {
-		value = -1
+	ai_will_do = { value = -1 }
+}
+
+# Scripted army assignment replacing the former Unit Ability.
+# This remains an ordinary script state; it does not register a new hardcoded
+# military objective type such as Carpet Siege.
+mp_start_military_patrol = {
+	type = owncountry
+	show_message = no
+	ai_tick = never
+
+	potential = {
+		scope:actor = { regular_army_size > 0 }
 	}
+
+	allow = {
+	}
+
+	select_trigger = {
+		looking_for_a = unit
+		source = actor
+		target_flag = mp_patrol_unit
+		name = "mp_start_military_patrol_select_army"
+		none_available_msg_key = "mp_no_configured_patrol_armies"
+		column = { data = name }
+		column = { data = unit_location }
+		visible = {
+			is_army = yes
+			has_variable_list = mp_patrol_provinces
+			NOT = { has_variable = mp_patrol_active }
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit = {
+			set_variable = { name = mp_patrol_active value = 1 }
+		}
+	}
+
+	ai_will_do = { value = -1 }
+}
+
+mp_stop_military_patrol = {
+	type = owncountry
+	show_message = no
+	ai_tick = never
+
+	potential = {
+		scope:actor = { regular_army_size > 0 }
+	}
+
+	allow = {
+	}
+
+	select_trigger = {
+		looking_for_a = unit
+		source = actor
+		target_flag = mp_patrol_unit
+		name = "mp_stop_military_patrol_select_army"
+		none_available_msg_key = "mp_no_active_patrol_armies"
+		column = { data = name }
+		column = { data = unit_location }
+		visible = {
+			is_army = yes
+			has_variable = mp_patrol_active
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit = {
+			remove_variable = mp_patrol_active
+		}
+	}
+
+	ai_will_do = { value = -1 }
 }
 
 mp_clear_patrol_route = {
@@ -79,9 +136,7 @@ mp_clear_patrol_route = {
 	ai_tick = never
 
 	potential = {
-		scope:actor = {
-			regular_army_size > 0
-		}
+		scope:actor = { regular_army_size > 0 }
 	}
 
 	allow = {
@@ -93,14 +148,8 @@ mp_clear_patrol_route = {
 		target_flag = mp_patrol_unit
 		name = "mp_clear_patrol_route_select_army"
 		none_available_msg_key = "mp_no_patrol_routes"
-
-		column = {
-			data = name
-		}
-		column = {
-			data = unit_location
-		}
-
+		column = { data = name }
+		column = { data = unit_location }
 		visible = {
 			is_army = yes
 			has_variable_list = mp_patrol_provinces
@@ -113,7 +162,5 @@ mp_clear_patrol_route = {
 		}
 	}
 
-	ai_will_do = {
-		value = -1
-	}
+	ai_will_do = { value = -1 }
 }
