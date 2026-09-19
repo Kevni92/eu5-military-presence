@@ -46,8 +46,10 @@ mp_add_patrol_province = {
 		}
 
 		visible = {
-			scope:actor = {
-				owns_or_non_sovereign_subject_owns_entire_province = root
+			# MVP routes are limited to provinces fully owned by the acting country.
+			any_location_in_province = {
+				owner = scope:actor
+				count = all
 			}
 			scope:mp_patrol_unit = {
 				NOT = {
