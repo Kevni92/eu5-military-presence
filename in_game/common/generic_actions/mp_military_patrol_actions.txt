@@ -1,6 +1,7 @@
 mp_add_patrol_province = {
 	type = owncountry
 	show_message = no
+	show_in_gui_list = no
 	ai_tick = never
 
 	potential = {
@@ -20,7 +21,11 @@ mp_add_patrol_province = {
 		none_available_msg_key = "mp_no_available_armies"
 		column = { data = name }
 		column = { data = unit_location }
-		visible = { is_army = yes }
+		visible = {
+			is_army = yes
+			owner = scope:actor
+			NOT = { has_variable = mp_patrol_active }
+		}
 	}
 
 	select_trigger = {
@@ -37,6 +42,9 @@ mp_add_patrol_province = {
 				count = all
 			}
 			scope:mp_patrol_unit = {
+				owner = scope:actor
+				is_army = yes
+				NOT = { has_variable = mp_patrol_active }
 				NOT = {
 					is_target_in_variable_list = {
 						name = mp_patrol_provinces
@@ -48,8 +56,19 @@ mp_add_patrol_province = {
 	}
 
 	effect = {
-		scope:mp_patrol_unit = {
-			mp_add_patrol_province_effect = yes
+		if = {
+			limit = {
+				exists = scope:mp_patrol_unit
+				exists = scope:mp_patrol_province
+				scope:mp_patrol_unit = {
+					owner = scope:actor
+					is_army = yes
+					NOT = { has_variable = mp_patrol_active }
+				}
+			}
+			scope:mp_patrol_unit = {
+				mp_add_patrol_province_effect = yes
+			}
 		}
 	}
 
@@ -62,6 +81,7 @@ mp_add_patrol_province = {
 mp_start_military_patrol = {
 	type = owncountry
 	show_message = no
+	show_in_gui_list = no
 	ai_tick = never
 
 	potential = {
@@ -81,14 +101,28 @@ mp_start_military_patrol = {
 		column = { data = unit_location }
 		visible = {
 			is_army = yes
+			owner = scope:actor
+			has_variable = mp_patrol_route_configured
 			has_variable_list = mp_patrol_provinces
 			NOT = { has_variable = mp_patrol_active }
 		}
 	}
 
 	effect = {
-		scope:mp_patrol_unit = {
-			set_variable = { name = mp_patrol_active value = 1 }
+		if = {
+			limit = {
+				exists = scope:mp_patrol_unit
+				scope:mp_patrol_unit = {
+					owner = scope:actor
+					is_army = yes
+					has_variable = mp_patrol_route_configured
+					has_variable_list = mp_patrol_provinces
+					NOT = { has_variable = mp_patrol_active }
+				}
+			}
+			scope:mp_patrol_unit = {
+				set_variable = { name = mp_patrol_active value = 1 }
+			}
 		}
 	}
 
@@ -98,6 +132,7 @@ mp_start_military_patrol = {
 mp_stop_military_patrol = {
 	type = owncountry
 	show_message = no
+	show_in_gui_list = no
 	ai_tick = never
 
 	potential = {
@@ -117,13 +152,24 @@ mp_stop_military_patrol = {
 		column = { data = unit_location }
 		visible = {
 			is_army = yes
+			owner = scope:actor
 			has_variable = mp_patrol_active
 		}
 	}
 
 	effect = {
-		scope:mp_patrol_unit = {
-			remove_variable = mp_patrol_active
+		if = {
+			limit = {
+				exists = scope:mp_patrol_unit
+				scope:mp_patrol_unit = {
+					owner = scope:actor
+					is_army = yes
+					has_variable = mp_patrol_active
+				}
+			}
+			scope:mp_patrol_unit = {
+				remove_variable = mp_patrol_active
+			}
 		}
 	}
 
@@ -133,6 +179,7 @@ mp_stop_military_patrol = {
 mp_clear_patrol_route = {
 	type = owncountry
 	show_message = no
+	show_in_gui_list = no
 	ai_tick = never
 
 	potential = {
@@ -152,13 +199,27 @@ mp_clear_patrol_route = {
 		column = { data = unit_location }
 		visible = {
 			is_army = yes
+			owner = scope:actor
+			has_variable = mp_patrol_route_configured
 			has_variable_list = mp_patrol_provinces
+			NOT = { has_variable = mp_patrol_active }
 		}
 	}
 
 	effect = {
-		scope:mp_patrol_unit = {
-			mp_clear_patrol_route_effect = yes
+		if = {
+			limit = {
+				exists = scope:mp_patrol_unit
+				scope:mp_patrol_unit = {
+					owner = scope:actor
+					is_army = yes
+					has_variable = mp_patrol_route_configured
+					NOT = { has_variable = mp_patrol_active }
+				}
+			}
+			scope:mp_patrol_unit = {
+				mp_clear_patrol_route_effect = yes
+			}
 		}
 	}
 
