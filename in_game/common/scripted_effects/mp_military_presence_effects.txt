@@ -298,8 +298,31 @@ mp_process_patrol_army_effect = {
 	}
 }
 
+# Scope: unit
+# An army without an active patrol contributes to the fully-owned province in
+# which it is physically stationed. This requires no player configuration.
+mp_process_stationed_army_effect = {
+	owner = {
+		save_scope_as = mp_stationed_army_owner
+	}
+
+	unit_location.province = {
+		if = {
+			limit = {
+				any_location_in_province = {
+					owner = scope:mp_stationed_army_owner
+					count = all
+				}
+			}
+			mp_add_military_presence_effect = yes
+		}
+	}
+}
+
 # Scope: country
 mp_monthly_country_presence_effect = {
+	# Existing Military Presence decays first. An army that contributes during
+	# the same pulse then adds its monthly contribution afterwards.
 	every_province = {
 		limit = {
 			has_variable = mp_military_presence
@@ -307,6 +330,18 @@ mp_monthly_country_presence_effect = {
 		mp_decay_military_presence_effect = yes
 	}
 
+	# Normal stationed armies automatically create Military Presence at their
+	# real position. Active virtual patrols are excluded here to avoid counting
+	# the same army both at its physical location and on its patrol route.
+	every_army = {
+		limit = {
+			is_exiled = no
+			NOT = { has_variable = mp_patrol_active }
+		}
+		mp_process_stationed_army_effect = yes
+	}
+
+	# Patrol-assigned armies continue to work their configured virtual route.
 	every_army = {
 		limit = {
 			has_variable = mp_patrol_active
