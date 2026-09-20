@@ -1,48 +1,17 @@
 # Military Patrol route editor helpers.
 #
 # Editing happens against mp_patrol_edit_provinces. The live linked-list route is
-# left untouched until Apply, then rebuilt in list order.
-#
-# Selection-map display state is mirrored directly to Province scope. Generic
-# Action map_color runs on Location scope and reaches the containing Province via
-# province = { ... }.
-
-# Scope: unit
-mp_clear_patrol_editor_map_cache_effect = {
-	owner = {
-		every_province = {
-			remove_variable = mp_patrol_editor_selected_map
-		}
-	}
-}
-
-# Scope: unit; requires scope:mp_patrol_province.
-mp_mark_patrol_editor_province_on_map_effect = {
-	scope:mp_patrol_province = {
-		set_variable = {
-			name = mp_patrol_editor_selected_map
-			value = 1
-		}
-	}
-}
-
-# Scope: unit; requires scope:mp_patrol_province.
-mp_unmark_patrol_editor_province_on_map_effect = {
-	scope:mp_patrol_province = {
-		remove_variable = mp_patrol_editor_selected_map
-	}
-}
+# left untouched until Apply, then rebuilt in list order with the existing
+# mp_add_patrol_province_effect helper.
 
 # Scope: unit
 mp_begin_patrol_route_editor_effect = {
-	mp_clear_patrol_editor_map_cache_effect = yes
 	clear_variable_list = mp_patrol_edit_provinces
 	set_variable = { name = mp_patrol_edit_open value = 1 }
 	remove_variable = mp_patrol_edit_dirty
 	remove_variable = mp_patrol_editor_last_map_focus
 
-	# Preserve the live route's order in the working copy and mirror every
-	# selected province to Province-scope display state.
+	# Preserve the live route's order in the working copy.
 	if = {
 		limit = { has_variable_list = mp_patrol_provinces }
 		save_scope_as = mp_patrol_editor_unit
@@ -54,10 +23,6 @@ mp_begin_patrol_route_editor_effect = {
 					name = mp_patrol_edit_provinces
 					target = scope:mp_patrol_editor_copy_province
 				}
-				scope:mp_patrol_editor_copy_province = {
-					save_scope_as = mp_patrol_province
-				}
-				mp_mark_patrol_editor_province_on_map_effect = yes
 			}
 		}
 	}
@@ -79,7 +44,6 @@ mp_add_patrol_route_editor_province_effect = {
 			name = mp_patrol_edit_provinces
 			target = scope:mp_patrol_province
 		}
-		mp_mark_patrol_editor_province_on_map_effect = yes
 		set_variable = { name = mp_patrol_edit_dirty value = 1 }
 	}
 }
@@ -97,7 +61,6 @@ mp_toggle_patrol_route_editor_province_effect = {
 			name = mp_patrol_edit_provinces
 			target = scope:mp_patrol_province
 		}
-		mp_unmark_patrol_editor_province_on_map_effect = yes
 		set_variable = { name = mp_patrol_edit_dirty value = 1 }
 	}
 	else = {
@@ -194,7 +157,6 @@ mp_select_all_patrol_route_editor_effect = {
 
 # Scope: unit
 mp_clear_patrol_route_editor_effect = {
-	mp_clear_patrol_editor_map_cache_effect = yes
 	clear_variable_list = mp_patrol_edit_provinces
 	set_variable = { name = mp_patrol_edit_open value = 1 }
 	set_variable = { name = mp_patrol_edit_dirty value = 1 }
@@ -203,7 +165,6 @@ mp_clear_patrol_route_editor_effect = {
 
 # Scope: unit
 mp_cancel_patrol_route_editor_effect = {
-	mp_clear_patrol_editor_map_cache_effect = yes
 	clear_variable_list = mp_patrol_edit_provinces
 	remove_variable = mp_patrol_edit_open
 	remove_variable = mp_patrol_edit_dirty
@@ -227,7 +188,6 @@ mp_apply_patrol_route_editor_effect = {
 		}
 	}
 
-	mp_clear_patrol_editor_map_cache_effect = yes
 	clear_variable_list = mp_patrol_edit_provinces
 	remove_variable = mp_patrol_edit_open
 	remove_variable = mp_patrol_edit_dirty

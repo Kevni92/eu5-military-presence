@@ -71,13 +71,29 @@ mp_edit_patrol_route = {
 			}
 		}
 
-		# map_color executes on Location scope. Selection state is stored on the
-		# containing Province so the renderer does not need to dereference a unit.
+		# Restore the original selection-map path: map_color executes on Location
+		# scope and checks the selected army's working list against root.province.
+		# This is the same mechanism used by the first colored route-editor build.
 		map_color = {
 			if = {
 				limit = {
-					province = {
-						has_variable = mp_patrol_editor_selected_map
+					scope:mp_patrol_unit = {
+						OR = {
+							AND = {
+								has_variable = mp_patrol_edit_open
+								is_target_in_variable_list = {
+									name = mp_patrol_edit_provinces
+									target = root.province
+								}
+							}
+							AND = {
+								NOT = { has_variable = mp_patrol_edit_open }
+								is_target_in_variable_list = {
+									name = mp_patrol_provinces
+									target = root.province
+								}
+							}
+						}
 					}
 				}
 				value = rgb { 55 155 95 }
@@ -89,8 +105,23 @@ mp_edit_patrol_route = {
 		secondary_map_color = {
 			if = {
 				limit = {
-					province = {
-						has_variable = mp_patrol_editor_selected_map
+					scope:mp_patrol_unit = {
+						OR = {
+							AND = {
+								has_variable = mp_patrol_edit_open
+								is_target_in_variable_list = {
+									name = mp_patrol_edit_provinces
+									target = root.province
+								}
+							}
+							AND = {
+								NOT = { has_variable = mp_patrol_edit_open }
+								is_target_in_variable_list = {
+									name = mp_patrol_provinces
+									target = root.province
+								}
+							}
+						}
 					}
 				}
 				value = rgb { 230 190 65 }
