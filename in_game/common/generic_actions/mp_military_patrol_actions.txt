@@ -26,8 +26,6 @@ mp_edit_patrol_route = {
 		}
 	}
 
-	# This selection stage deliberately stays open. The custom checkbox column
-	# mutates a temporary route through scripted GUIs; Apply commits it later.
 	select_trigger = {
 		looking_for_a = province
 		source = actor
@@ -73,28 +71,13 @@ mp_edit_patrol_route = {
 			}
 		}
 
-		# The selection map mirrors the route editor state. Selected provinces are
-		# green with a gold secondary stripe; other selectable provinces stay grey.
+		# map_color executes on Location scope. Selection state is stored on the
+		# containing Province so the renderer does not need to dereference a unit.
 		map_color = {
 			if = {
 				limit = {
-					scope:mp_patrol_unit = {
-						OR = {
-							AND = {
-								has_variable = mp_patrol_edit_open
-								is_target_in_variable_list = {
-									name = mp_patrol_edit_provinces
-									target = root.province
-								}
-							}
-							AND = {
-								NOT = { has_variable = mp_patrol_edit_open }
-								is_target_in_variable_list = {
-									name = mp_patrol_provinces
-									target = root.province
-								}
-							}
-						}
+					province = {
+						has_variable = mp_patrol_editor_selected_map
 					}
 				}
 				value = rgb { 55 155 95 }
@@ -106,23 +89,8 @@ mp_edit_patrol_route = {
 		secondary_map_color = {
 			if = {
 				limit = {
-					scope:mp_patrol_unit = {
-						OR = {
-							AND = {
-								has_variable = mp_patrol_edit_open
-								is_target_in_variable_list = {
-									name = mp_patrol_edit_provinces
-									target = root.province
-								}
-							}
-							AND = {
-								NOT = { has_variable = mp_patrol_edit_open }
-								is_target_in_variable_list = {
-									name = mp_patrol_provinces
-									target = root.province
-								}
-							}
-						}
+					province = {
+						has_variable = mp_patrol_editor_selected_map
 					}
 				}
 				value = rgb { 230 190 65 }
@@ -131,16 +99,12 @@ mp_edit_patrol_route = {
 		only_color_selectable = yes
 	}
 
-	# Route changes are committed by the editor's scripted GUI Apply button.
 	effect = {
 	}
 
 	ai_will_do = { value = -1 }
 }
 
-# Scripted army assignment replacing the former Unit Ability.
-# This remains ordinary script state; it does not register a new hardcoded
-# military objective type such as Carpet Siege.
 mp_start_military_patrol = {
 	type = owncountry
 	show_message = no

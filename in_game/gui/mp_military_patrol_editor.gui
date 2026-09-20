@@ -1,6 +1,5 @@
 # Military Patrol multi-province route editor widgets.
 
-# Province selection table checkbox column.
 types ProvinceColumns
 {
 	type mp_patrol_route_toggle = select_cell_default {
@@ -14,52 +13,53 @@ types ProvinceColumns
 			down = "[GetScriptedGui('mp_patrol_editor_province_selected').IsShown(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
 			enabled = "[GetScriptedGui('mp_patrol_editor_toggle_province').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
 
-			# Normal click toggles only this province.
+			# Run the scripted route edit and the same native target-selection callback
+			# used by vanilla selection rows. The native callback keeps map focus and
+			# selection-map redraw behavior in sync with checkbox edits.
 			action_tooltip = {
 				click_type = left
 				click_mode = single
+				click_modifier = default
 				title = "mp_patrol_editor_toggle_tt"
 				on_action = "[GetScriptedGui('mp_patrol_editor_toggle_province').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
+				on_action_with_params = "[SelectInteractionTargetGlue.OnLeftClick]"
 			}
 
-			# Shift-click adds the entire Region containing this province.
 			action_tooltip = {
 				click_type = left
 				click_mode = single
 				click_modifier = shift
 				title = "mp_patrol_editor_add_region_tt"
 				on_action = "[GetScriptedGui('mp_patrol_editor_add_region').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
+				on_action_with_params = "[SelectInteractionTargetGlue.OnLeftClick]"
 			}
 
-			# Ctrl-click adds the entire Area containing this province.
 			action_tooltip = {
 				click_type = left
 				click_mode = single
 				click_modifier = ctrl
 				title = "mp_patrol_editor_add_area_tt"
 				on_action = "[GetScriptedGui('mp_patrol_editor_add_area').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', InteractionTarget.GetProvince.MakeScope).End)]"
+				on_action_with_params = "[SelectInteractionTargetGlue.OnLeftClick]"
 			}
 		}
 	}
 }
 
-# Generic-action selection top/bottom widgets.
 types SelectTarget
 {
 	type mp_patrol_route_editor_top = widget {
 		layoutpolicy_horizontal = expanding
 		size = { -1 92 }
 
-		# A new selection view gets a fresh working copy. Closing without Apply
-		# never changes the live route; reopening reconstructs from live state.
 		state = {
 			name = mp_patrol_editor_initialize
 			trigger_on_create = yes
 			on_start = "[GetScriptedGui('mp_patrol_editor_begin').Execute(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).End)]"
 		}
 
-		# A click on the Generic Action map changes its focus target. Mirror each
-		# new focus target into the editor working list so map clicks add provinces.
+		# Native Generic Action map clicks update the focus target. This watcher
+		# copies each new focused province into the route working list.
 		state = {
 			name = mp_patrol_editor_map_focus_watch
 			trigger_when = "[GetScriptedGui('mp_patrol_editor_map_focus_changed').IsValid(GuiScope.SetRoot(GetPlayer.MakeScope).AddScope('mp_patrol_unit', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_unit').GetUnit.MakeScope).AddScope('mp_patrol_province', SelectInteractionTargetView.GetCurrentParams.GetTargetObjectFromFlag('mp_patrol_editor_focus_province').GetProvince.MakeScope).End)]"
@@ -77,18 +77,29 @@ types SelectTarget
 			}
 			vbox = {
 				layoutpolicy_horizontal = expanding
+				spacing = 1
 				text_single = {
-					autoresize = yes
+					layoutpolicy_horizontal = expanding
+					size = { -1 21 }
+					autoresize = no
 					default_format = "#high"
 					text = "mp_patrol_editor_title"
 				}
-				textbox = {
+				text_single = {
 					layoutpolicy_horizontal = expanding
-					layoutpolicy_vertical = fixed
-					size = { -1 50 }
+					size = { -1 18 }
 					autoresize = no
 					using = Font_Size_Small
-					text = "mp_patrol_editor_instructions"
+					default_format = "#white"
+					text = "mp_patrol_editor_instruction_click"
+				}
+				text_single = {
+					layoutpolicy_horizontal = expanding
+					size = { -1 18 }
+					autoresize = no
+					using = Font_Size_Small
+					default_format = "#white"
+					text = "mp_patrol_editor_instruction_modifiers"
 				}
 			}
 		}
