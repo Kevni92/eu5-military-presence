@@ -31,13 +31,22 @@ Right-click one of your own armies to open the normal EU5 unit context menu. Mil
 
 ### Multi-province route editor
 
-**Edit Military Patrol Route** opens one province-selection session for the selected army. A custom checkbox column allows multiple fully owned provinces to be selected and deselected without closing the selector.
+**Edit Military Patrol Route** opens one province-selection session for the selected army. The editor keeps a temporary working list (`mp_patrol_edit_provinces`) and does not alter the committed route until **Apply** is pressed.
 
-The editor uses a temporary working list (`mp_patrol_edit_provinces`). Opening the editor copies the currently committed route into that list. Checkbox changes affect only the working list until the player chooses **Apply**.
+Available selection methods:
+
+- click a fully owned province on the map to add that single province;
+- click a province checkbox to toggle that province on/off;
+- **Shift + checkbox** adds every fully owned province in that province's Region;
+- **Ctrl + checkbox** adds every fully owned province in that province's Area;
+- **Select All** adds every fully owned province in the country;
+- **Clear Selection** empties only the working copy.
+
+Selected provinces are shown in the selection map with a green base and gold stripes. Map clicks are additive. Removal is explicit through the checkboxes or Clear Selection. The Generic Action map callback does not expose a verified Shift/Ctrl modifier scope, so Region/Area modifier selection is intentionally attached to the checkbox UI rather than map clicks.
 
 - **Apply** replaces the live patrol route with the working list and rebuilds the circular linked list from scratch.
 - **Cancel** discards the working list and leaves the live route unchanged.
-- **Clear Selection** empties only the working list; applying an empty list deletes the committed route.
+- Applying an empty working list deletes the committed route.
 
 Retained provinces preserve their relative order. Newly selected provinces are appended in selection order. Removing and then re-adding a province therefore moves it to the end of the route.
 
@@ -47,12 +56,15 @@ Patrol routes cannot be edited while the patrol assignment is active. Stop the p
 
 A custom **Military Presence** map mode is defined under `in_game/gfx/map/map_modes/` in the Military category.
 
-Military Presence remains authoritative at province scope. Because EU5 map-mode coloring is evaluated per location, the current province value is mirrored to all locations in that province as `mp_military_presence_map_value`. This makes the whole province display the same color.
+Military Presence remains authoritative at province scope. Because EU5 map-mode coloring is evaluated per location, the current province value is mirrored to all locations in that province as `mp_military_presence_map_value`. This makes the whole province display the same base color.
 
 - no presence: grey
 - low presence: red
 - high presence: green
-- tooltip: current value from 0 to 100
+- **gold stripes:** at least one army is currently assigned to build Military Presence in that province
+- tooltip: current value from 0 to 100 plus assignment state
+
+The assignment overlay includes both unassigned armies at their physical location and active patrol armies at their current virtual patrol target. Active patrol armies in combat do not contribute and are not striped for that pulse. The cache is rebuilt after each monthly Presence update and immediately when a patrol is started or stopped. Physical army movement therefore updates the stripe on the next monthly refresh.
 
 ## Current balance
 
@@ -74,11 +86,13 @@ The province modifier scales linearly with Military Presence. Its static modifie
 
 Per-province state:
 
-- `mp_military_presence` — authoritative numeric Military Presence value.
+- `mp_military_presence` — authoritative numeric Military Presence value;
+- `mp_military_presence_assignment` — display-cache flag while an army is assigned to build Presence there.
 
 Per-location display cache:
 
-- `mp_military_presence_map_value` — mirrored value used only by the map mode.
+- `mp_military_presence_map_value` — mirrored Presence value used by the map mode;
+- `mp_military_presence_assignment_map_value` — mirrored assignment flag used for the striped secondary map color.
 
 Per-army live route state:
 
@@ -94,15 +108,17 @@ Per-army editor state:
 
 - `mp_patrol_edit_provinces` — temporary ordered working list;
 - `mp_patrol_edit_open` — editor working-copy state;
-- `mp_patrol_edit_dirty` — whether the working copy was changed.
+- `mp_patrol_edit_dirty` — whether the working copy was changed;
+- `mp_patrol_editor_last_map_focus` — last map target mirrored into the working list.
 
 The monthly driver runs from `monthly_country_pulse`.
 
 The multi-select editor combines:
 
-- a Generic Action with `move_to_next_section_on_click = no`, `top_widget`, `bottom_widget`, and `selected`;
+- a Generic Action with `move_to_next_section_on_click = no`, `top_widget`, `bottom_widget`, `selected`, `map_color`, and `secondary_map_color`;
 - a custom province attribute column injected into the target table;
-- scripted GUIs that toggle working-list membership and apply/cancel the edit transaction.
+- scripted GUIs for checkbox toggle, map-click mirroring, Area/Region bulk selection, Select All, Apply and Cancel;
+- an ordered temporary variable list that is transactionally rebuilt into the live circular route on Apply.
 
 The right-click integration redefines vanilla `UnitContextMenu` and `UnitMarkerContextMenu` in `in_game/gui/aaa_mp_unit_context_menu.gui`. The `aaa_` prefix follows tested EU5 GUI-mod precedent for first-definition-wins loading, and the definitions live in the same `types ContextMenuSpecificTypes` collection as vanilla. Vanilla quick unit actions and the `unit_contextmenu_pre_entries` hook remain preserved.
 
@@ -120,8 +136,9 @@ For that reason this MVP does **not** claim to create a new native Carpet-Siege-
 - Contributions are fixed per army, not yet scaled by army strength/composition; splitting armies can therefore multiply the contribution in the current MVP.
 - No direct instantaneous Control increase is applied; the current implementation modifies monthly Control growth, maximum Control and unrest.
 - AI does not configure patrol routes.
+- Stationary-army assignment stripes refresh on the monthly cache rebuild rather than on every physical movement frame.
 - The `UnitContextMenu` / `UnitMarkerContextMenu` redefinitions are GUI compatibility points with other mods that redefine the same vanilla types.
-- The custom selector widgets and attribute-column injection require in-game validation with `debug_mode` / `error.log` because they are compatibility-sensitive GUI/data hooks.
+- The custom selector widgets, map-target watcher and attribute-column injection require in-game validation with `debug_mode` / `error.log` because they are compatibility-sensitive GUI/data hooks.
 
 ## Target
 

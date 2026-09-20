@@ -38,6 +38,7 @@ mp_patrol_editor_toggle_province = {
 		scope:mp_patrol_unit ?= {
 			is_army = yes
 			owner = root
+			has_variable = mp_patrol_edit_open
 			NOT = { has_variable = mp_patrol_active }
 		}
 		scope:mp_patrol_province ?= {
@@ -54,6 +55,7 @@ mp_patrol_editor_toggle_province = {
 				scope:mp_patrol_unit ?= {
 					is_army = yes
 					owner = root
+					has_variable = mp_patrol_edit_open
 					NOT = { has_variable = mp_patrol_active }
 				}
 				scope:mp_patrol_province ?= {
@@ -66,6 +68,40 @@ mp_patrol_editor_toggle_province = {
 			scope:mp_patrol_unit = {
 				mp_toggle_patrol_route_editor_province_effect = yes
 			}
+		}
+	}
+}
+
+# Triggered by the top-widget watcher whenever a new province is clicked on the
+# Generic Action map. Map clicks are additive; checkbox clicks provide toggling.
+mp_patrol_editor_map_focus_changed = {
+	scope = country
+	saved_scopes = { mp_patrol_unit mp_patrol_province }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			has_variable = mp_patrol_edit_open
+			NOT = { has_variable = mp_patrol_active }
+			OR = {
+				NOT = { has_variable = mp_patrol_editor_last_map_focus }
+				var:mp_patrol_editor_last_map_focus ?= {
+					NOT = { this = scope:mp_patrol_province }
+				}
+			}
+		}
+		scope:mp_patrol_province ?= {
+			any_location_in_province = {
+				owner = root
+				count = all
+			}
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit ?= {
+			mp_note_patrol_route_editor_map_focus_effect = yes
 		}
 	}
 }
@@ -100,6 +136,80 @@ mp_patrol_editor_province_selected = {
 	effect = { }
 }
 
+# Ctrl-click checkbox helper: add every fully-owned province in this Area.
+mp_patrol_editor_add_area = {
+	scope = country
+	saved_scopes = { mp_patrol_unit mp_patrol_province }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			has_variable = mp_patrol_edit_open
+			NOT = { has_variable = mp_patrol_active }
+		}
+		scope:mp_patrol_province ?= {
+			any_location_in_province = {
+				owner = root
+				count = all
+			}
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit ?= {
+			mp_add_patrol_route_editor_area_effect = yes
+		}
+	}
+}
+
+# Shift-click checkbox helper: add every fully-owned province in this Region.
+mp_patrol_editor_add_region = {
+	scope = country
+	saved_scopes = { mp_patrol_unit mp_patrol_province }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			has_variable = mp_patrol_edit_open
+			NOT = { has_variable = mp_patrol_active }
+		}
+		scope:mp_patrol_province ?= {
+			any_location_in_province = {
+				owner = root
+				count = all
+			}
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit ?= {
+			mp_add_patrol_route_editor_region_effect = yes
+		}
+	}
+}
+
+mp_patrol_editor_select_all = {
+	scope = country
+	saved_scopes = { mp_patrol_unit }
+
+	is_valid = {
+		scope:mp_patrol_unit ?= {
+			is_army = yes
+			owner = root
+			has_variable = mp_patrol_edit_open
+			NOT = { has_variable = mp_patrol_active }
+		}
+	}
+
+	effect = {
+		scope:mp_patrol_unit ?= {
+			mp_select_all_patrol_route_editor_effect = yes
+		}
+	}
+}
+
 mp_patrol_editor_clear = {
 	scope = country
 	saved_scopes = { mp_patrol_unit }
@@ -108,6 +218,7 @@ mp_patrol_editor_clear = {
 		scope:mp_patrol_unit ?= {
 			is_army = yes
 			owner = root
+			has_variable = mp_patrol_edit_open
 			NOT = { has_variable = mp_patrol_active }
 		}
 	}
@@ -138,6 +249,7 @@ mp_patrol_editor_apply = {
 		scope:mp_patrol_unit ?= {
 			is_army = yes
 			owner = root
+			has_variable = mp_patrol_edit_open
 			NOT = { has_variable = mp_patrol_active }
 		}
 	}
@@ -148,6 +260,7 @@ mp_patrol_editor_apply = {
 				scope:mp_patrol_unit ?= {
 					is_army = yes
 					owner = root
+					has_variable = mp_patrol_edit_open
 					NOT = { has_variable = mp_patrol_active }
 				}
 			}

@@ -34,6 +34,7 @@ mp_edit_patrol_route = {
 		target_flag = mp_patrol_editor_focus_province
 		name = "mp_edit_patrol_route_select_provinces"
 		none_available_msg_key = "mp_no_available_patrol_provinces"
+		tooltip_msg_key = "mp_patrol_editor_map_tt"
 		move_to_next_section_on_click = no
 		top_widget = mp_patrol_route_editor_top
 		bottom_widget = mp_patrol_route_editor_bottom
@@ -71,6 +72,63 @@ mp_edit_patrol_route = {
 				}
 			}
 		}
+
+		# The selection map mirrors the route editor state. Selected provinces are
+		# green with a gold secondary stripe; other selectable provinces stay grey.
+		map_color = {
+			if = {
+				limit = {
+					scope:mp_patrol_unit = {
+						OR = {
+							AND = {
+								has_variable = mp_patrol_edit_open
+								is_target_in_variable_list = {
+									name = mp_patrol_edit_provinces
+									target = root.province
+								}
+							}
+							AND = {
+								NOT = { has_variable = mp_patrol_edit_open }
+								is_target_in_variable_list = {
+									name = mp_patrol_provinces
+									target = root.province
+								}
+							}
+						}
+					}
+				}
+				value = rgb { 55 155 95 }
+			}
+			else = {
+				value = rgb { 90 90 90 }
+			}
+		}
+		secondary_map_color = {
+			if = {
+				limit = {
+					scope:mp_patrol_unit = {
+						OR = {
+							AND = {
+								has_variable = mp_patrol_edit_open
+								is_target_in_variable_list = {
+									name = mp_patrol_edit_provinces
+									target = root.province
+								}
+							}
+							AND = {
+								NOT = { has_variable = mp_patrol_edit_open }
+								is_target_in_variable_list = {
+									name = mp_patrol_provinces
+									target = root.province
+								}
+							}
+						}
+					}
+				}
+				value = rgb { 230 190 65 }
+			}
+		}
+		only_color_selectable = yes
 	}
 
 	# Route changes are committed by the editor's scripted GUI Apply button.
@@ -128,6 +186,9 @@ mp_start_military_patrol = {
 			scope:mp_patrol_unit = {
 				set_variable = { name = mp_patrol_active value = 1 }
 			}
+			scope:actor = {
+				mp_refresh_military_presence_assignments_effect = yes
+			}
 		}
 	}
 
@@ -174,6 +235,9 @@ mp_stop_military_patrol = {
 			}
 			scope:mp_patrol_unit = {
 				remove_variable = mp_patrol_active
+			}
+			scope:actor = {
+				mp_refresh_military_presence_assignments_effect = yes
 			}
 		}
 	}

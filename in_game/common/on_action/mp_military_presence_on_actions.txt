@@ -18,5 +18,9 @@ mp_military_presence_monthly_pulse = {
 
 	effect = {
 		mp_monthly_country_presence_effect = yes
+
+		# Rebuild the display cache after Presence processing so a patrol that
+		# advances this month is striped on its new current target immediately.
+		mp_refresh_military_presence_assignments_effect = yes
 	}
 }

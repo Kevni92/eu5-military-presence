@@ -9,6 +9,7 @@ mp_begin_patrol_route_editor_effect = {
 	clear_variable_list = mp_patrol_edit_provinces
 	set_variable = { name = mp_patrol_edit_open value = 1 }
 	remove_variable = mp_patrol_edit_dirty
+	remove_variable = mp_patrol_editor_last_map_focus
 
 	# Preserve the live route's order in the working copy.
 	if = {
@@ -28,6 +29,26 @@ mp_begin_patrol_route_editor_effect = {
 }
 
 # Scope: unit; requires scope:mp_patrol_province.
+# Adds only when missing, preserving insertion order and avoiding duplicates.
+mp_add_patrol_route_editor_province_effect = {
+	if = {
+		limit = {
+			NOT = {
+				is_target_in_variable_list = {
+					name = mp_patrol_edit_provinces
+					target = scope:mp_patrol_province
+				}
+			}
+		}
+		add_to_variable_list = {
+			name = mp_patrol_edit_provinces
+			target = scope:mp_patrol_province
+		}
+		set_variable = { name = mp_patrol_edit_dirty value = 1 }
+	}
+}
+
+# Scope: unit; requires scope:mp_patrol_province.
 mp_toggle_patrol_route_editor_province_effect = {
 	if = {
 		limit = {
@@ -40,14 +61,101 @@ mp_toggle_patrol_route_editor_province_effect = {
 			name = mp_patrol_edit_provinces
 			target = scope:mp_patrol_province
 		}
+		set_variable = { name = mp_patrol_edit_dirty value = 1 }
 	}
 	else = {
-		add_to_variable_list = {
-			name = mp_patrol_edit_provinces
-			target = scope:mp_patrol_province
+		mp_add_patrol_route_editor_province_effect = yes
+	}
+}
+
+# Scope: unit; requires scope:mp_patrol_province.
+# A map click is additive. Removal remains explicit through the checkbox so a
+# single map click can never accidentally delete part of a route.
+mp_note_patrol_route_editor_map_focus_effect = {
+	set_variable = {
+		name = mp_patrol_editor_last_map_focus
+		value = scope:mp_patrol_province
+	}
+	mp_add_patrol_route_editor_province_effect = yes
+}
+
+# Scope: unit; requires scope:mp_patrol_province.
+# Add every fully-owned province in the clicked province's Area.
+mp_add_patrol_route_editor_area_effect = {
+	save_scope_as = mp_patrol_editor_unit
+	owner = { save_scope_as = mp_patrol_editor_owner }
+
+	scope:mp_patrol_province = {
+		random_location_in_province = {
+			save_scope_as = mp_patrol_editor_geo_location
 		}
 	}
-	set_variable = { name = mp_patrol_edit_dirty value = 1 }
+
+	scope:mp_patrol_editor_geo_location.area = {
+		every_province_in_area = {
+			limit = {
+				any_location_in_province = {
+					owner = scope:mp_patrol_editor_owner
+					count = all
+				}
+			}
+			save_scope_as = mp_patrol_province
+			scope:mp_patrol_editor_unit = {
+				mp_add_patrol_route_editor_province_effect = yes
+			}
+		}
+	}
+}
+
+# Scope: unit; requires scope:mp_patrol_province.
+# Add every fully-owned province in the clicked province's Region.
+mp_add_patrol_route_editor_region_effect = {
+	save_scope_as = mp_patrol_editor_unit
+	owner = { save_scope_as = mp_patrol_editor_owner }
+
+	scope:mp_patrol_province = {
+		random_location_in_province = {
+			save_scope_as = mp_patrol_editor_geo_location
+		}
+	}
+
+	scope:mp_patrol_editor_geo_location.region = {
+		every_area_in_region = {
+			every_province_in_area = {
+				limit = {
+					any_location_in_province = {
+						owner = scope:mp_patrol_editor_owner
+						count = all
+					}
+				}
+				save_scope_as = mp_patrol_province
+				scope:mp_patrol_editor_unit = {
+					mp_add_patrol_route_editor_province_effect = yes
+				}
+			}
+		}
+	}
+}
+
+# Scope: unit. Adds every fully-owned province of the army's country.
+mp_select_all_patrol_route_editor_effect = {
+	save_scope_as = mp_patrol_editor_unit
+	owner = { save_scope_as = mp_patrol_editor_owner }
+
+	scope:mp_patrol_editor_owner = {
+		every_province = {
+			limit = {
+				any_location_in_province = {
+					owner = scope:mp_patrol_editor_owner
+					count = all
+				}
+			}
+			save_scope_as = mp_patrol_province
+			scope:mp_patrol_editor_unit = {
+				mp_add_patrol_route_editor_province_effect = yes
+			}
+		}
+	}
 }
 
 # Scope: unit
@@ -62,6 +170,7 @@ mp_cancel_patrol_route_editor_effect = {
 	clear_variable_list = mp_patrol_edit_provinces
 	remove_variable = mp_patrol_edit_open
 	remove_variable = mp_patrol_edit_dirty
+	remove_variable = mp_patrol_editor_last_map_focus
 }
 
 # Scope: unit
@@ -89,4 +198,5 @@ mp_apply_patrol_route_editor_effect = {
 	clear_variable_list = mp_patrol_edit_provinces
 	remove_variable = mp_patrol_edit_open
 	remove_variable = mp_patrol_edit_dirty
+	remove_variable = mp_patrol_editor_last_map_focus
 }

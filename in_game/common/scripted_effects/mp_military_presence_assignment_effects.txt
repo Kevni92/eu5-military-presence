@@ -1,0 +1,88 @@
+# Military Presence assignment-map cache.
+#
+# A province is marked while at least one army is currently contributing (or is
+# eligible to contribute on the next monthly pulse) to Military Presence there.
+# Map modes operate on locations, so the province marker is mirrored to every
+# location as mp_military_presence_assignment_map_value.
+
+# Scope: province
+mp_mark_military_presence_assignment_effect = {
+	set_variable = { name = mp_military_presence_assignment value = 1 }
+	every_location_in_province = {
+		set_variable = {
+			name = mp_military_presence_assignment_map_value
+			value = 1
+		}
+	}
+}
+
+# Scope: province
+mp_clear_military_presence_assignment_effect = {
+	remove_variable = mp_military_presence_assignment
+	every_location_in_province = {
+		remove_variable = mp_military_presence_assignment_map_value
+	}
+}
+
+# Scope: country
+mp_refresh_military_presence_assignments_effect = {
+	save_scope_as = mp_presence_assignment_owner
+
+	# Clear last refresh before rebuilding from the current army state. Include
+	# the location mirror in the guard so stale caches from an interrupted save
+	# are also cleaned up.
+	every_province = {
+		limit = {
+			OR = {
+				has_variable = mp_military_presence_assignment
+				any_location_in_province = {
+					has_variable = mp_military_presence_assignment_map_value
+				}
+			}
+		}
+		mp_clear_military_presence_assignment_effect = yes
+	}
+
+	# A normal, non-patrol army builds Presence where it is physically stationed.
+	every_army = {
+		limit = {
+			is_exiled = no
+			NOT = { has_variable = mp_patrol_active }
+		}
+		unit_location.province = {
+			if = {
+				limit = {
+					any_location_in_province = {
+						owner = scope:mp_presence_assignment_owner
+						count = all
+					}
+				}
+				mp_mark_military_presence_assignment_effect = yes
+			}
+		}
+	}
+
+	# An active virtual patrol builds Presence only in its current virtual target.
+	# Patrols in combat do not contribute on the monthly pulse and are therefore
+	# not shown as assigned until they are eligible again.
+	every_army = {
+		limit = {
+			has_variable = mp_patrol_active
+			has_variable = mp_patrol_current
+			has_variable_list = mp_patrol_provinces
+			in_combat = no
+			is_exiled = no
+		}
+		var:mp_patrol_current = {
+			if = {
+				limit = {
+					any_location_in_province = {
+						owner = scope:mp_presence_assignment_owner
+						count = all
+					}
+				}
+				mp_mark_military_presence_assignment_effect = yes
+			}
+		}
+	}
+}

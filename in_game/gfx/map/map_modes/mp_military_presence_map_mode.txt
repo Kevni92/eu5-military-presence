@@ -34,12 +34,39 @@ mp_military_presence = {
 		}
 	}
 
+	# EU5 renders secondary_map_color as stripes. Gold stripes therefore identify
+	# provinces that currently have an army assigned to build Military Presence.
+	secondary_map_color = {
+		if = {
+			limit = {
+				has_variable = mp_military_presence_assignment_map_value
+			}
+			value = rgb { 225 190 65 }
+		}
+	}
+
 	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_NONE" color = rgb { 110 110 110 } }
 	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_LOW" color = rgb { 150 45 45 } }
 	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_HIGH" color = rgb { 40 170 70 } }
+	legend_key = { desc = "MAPMODE_MP_MILITARY_PRESENCE_ASSIGNED" color = rgb { 225 190 65 } }
 
 	tooltip_key = {
 		if = {
+			limit = {
+				AND = {
+					has_variable = mp_military_presence_map_value
+					has_variable = mp_military_presence_assignment_map_value
+				}
+			}
+			value = MAPMODE_MP_MILITARY_PRESENCE_TT_ASSIGNED
+		}
+		else_if = {
+			limit = {
+				has_variable = mp_military_presence_assignment_map_value
+			}
+			value = MAPMODE_MP_MILITARY_PRESENCE_TT_ASSIGNED_NONE
+		}
+		else_if = {
 			limit = { has_variable = mp_military_presence_map_value }
 			value = MAPMODE_MP_MILITARY_PRESENCE_TT
 		}
